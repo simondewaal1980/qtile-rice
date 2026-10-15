@@ -38,6 +38,16 @@ install -m 644 "${REPO_DIR}/picom/picom.conf"         "${CONFIG_DIR}/picom/picom
 install -m 644 "${REPO_DIR}/rofi/config.rasi"         "${CONFIG_DIR}/rofi/config.rasi"
 install -m 644 "${REPO_DIR}/alacritty/alacritty.toml" "${CONFIG_DIR}/alacritty/alacritty.toml"
 
+# systemd-user-timer die de wallpaper elke 10 minuten wisselt.
+mkdir -p "${CONFIG_DIR}/systemd/user"
+install -m 644 "${REPO_DIR}/systemd/"*.service "${REPO_DIR}/systemd/"*.timer \
+    "${CONFIG_DIR}/systemd/user/"
+if command -v systemctl >/dev/null 2>&1; then
+    systemctl --user daemon-reload 2>/dev/null || true
+    systemctl --user enable --now wallpaper-rotate.timer 2>/dev/null \
+        && echo ">> Timer 'wallpaper-rotate.timer' geactiveerd (elke 10 minuten)."
+fi
+
 if command -v wal >/dev/null 2>&1; then
     echo ">> Kleurenschema genereren en toepassen…"
     "${CONFIG_DIR}/qtile/scripts/set-wallpaper.sh" || true

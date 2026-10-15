@@ -12,6 +12,8 @@ qtile, rofi, de terminal, dunst (notificaties) en GTK-apps.
 | `picom/` | compositor (schaduwen, transparantie, afgeronde hoeken, blur) |
 | `rofi/` | applicatielauncher (kleuren via pywal) |
 | `alacritty/` | terminal (kleuren via pywal) |
+| `systemd/` | systemd-user-timer voor de automatische wallpaperwissel |
+| `wallpapers/` | script om een wallpaperset op te halen (Griekse landschappen & stadsgezichten) |
 | `packages/` | lijst met benodigde pakketten (officiële repo's + AUR) |
 
 ## Hoe de theming werkt
@@ -33,6 +35,8 @@ wal -i <wallpaper> -n        →  palet in ~/.cache/wal/
   pywal-kleuren en herlaadt een draaiende dunst (`dunstctl reload`). De accentkleur
   (`color2`) is de rand van gewone meldingen, `color1` die van kritieke.
 - `qtile/scripts/wallpaper-pick.sh` — rofi-galerij met thumbnails om een wallpaper te kiezen.
+- `qtile/scripts/wallpaper-rotate.sh` — kiest een (andere) willekeurige wallpaper en
+  werkt het schema bij; aangeroepen door de systemd-timer (zie hieronder).
 - qtile tekent de achtergrond zelf (`wallpaper=` in `config.py`), daarom gebruikt
   pywal de optie `-n` (zet de wallpaper niet zelf).
 
@@ -45,6 +49,44 @@ wal -i <wallpaper> -n        →  palet in ~/.cache/wal/
 | `mod+Tab` | Vensterkiezer (rofi) |
 | `mod+Return` | Terminal (alacritty) |
 | `mod+ctrl+r` | qtile-config herladen |
+
+## Automatische wallpaperwissel
+
+Elke **10 minuten** wordt een andere wallpaper uit `~/.local/share/wallpapers/`
+gekozen (willekeurig, nooit twee keer achter elkaar dezelfde) en wordt het
+pywal-kleurenschema — inclusief dunst — bijgewerkt. Dat draait als
+systemd-**user**-timer:
+
+| Bestand | Doel |
+|---|---|
+| `systemd/wallpaper-rotate.service` | roept `qtile/scripts/wallpaper-rotate.sh` aan |
+| `systemd/wallpaper-rotate.timer` | start die service elke 10 minuten (eerste keer 3 min na login) |
+
+Beheren:
+
+```bash
+systemctl --user list-timers wallpaper-rotate.timer   # volgende wissel bekijken
+systemctl --user stop  wallpaper-rotate.timer         # pauzeren
+systemctl --user start wallpaper-rotate.timer         # weer aanzetten
+systemctl --user start wallpaper-rotate.service       # nu meteen wisselen
+```
+
+`install.sh` zet de units in `~/.config/systemd/user/` en activeert de timer.
+
+## Wallpapers ophalen
+
+`wallpapers/fetch-greek-wallpapers.sh` haalt 20 Griekse landschappen en
+stadsgezichten op van [Wikimedia Commons](https://commons.wikimedia.org/) (vrije
+licenties) en zet ze in `~/.local/share/wallpapers/`:
+
+```bash
+./wallpapers/fetch-greek-wallpapers.sh          # → ~/.local/share/wallpapers/
+./wallpapers/fetch-greek-wallpapers.sh ~/mijn   # of een eigen map
+```
+
+De afbeeldingen zelf staan **niet** in de repo (samen te groot); het script is
+reproduceerbaar. De kiezer (`mod+shift+w`) en de rotatie pikken nieuwe bestanden
+automatisch op.
 
 ## Installatie
 
@@ -65,7 +107,8 @@ git clone https://aur.archlinux.org/python-pywal16.git && cd python-pywal16 && m
 
 Daarna genereert `~/.config/qtile/scripts/set-wallpaper.sh` het schema en het
 dunst-thema; bij de volgende login starten `picom` en `dunst` automatisch mee
-(via `@hook.subscribe.startup_once` in `config.py`).
+(via `@hook.subscribe.startup_once` in `config.py`). `install.sh` activeert ook
+meteen de timer die elke 10 minuten van wallpaper wisselt.
 
 ## Repo bijwerken vanuit de live-configuratie
 
@@ -88,5 +131,8 @@ Pas je iets aan in `~/.config` en wil je dat in deze repo zetten:
   en `blur-background = false;`.
 - **Wallpapers** staan in `~/.local/share/wallpapers/`; pas `WALLPAPER_DIR` in de
   scripts aan als je een andere map wilt.
+- **Timer & DISPLAY**: de rotatie-service erft `DISPLAY`/`XAUTHORITY` van de
+  systemd-user-manager (die ze bij het inloggen meekrijgt). Wisselt er niets?
+  Controleer dan of `systemctl --user show-environment` beide variabelen toont.
 - GTK4/libadwaita-apps laten zich maar beperkt extern stijlen (beperking van GTK,
   niet van deze opzet); GTK3-apps volgen `gtk.css` volledig.

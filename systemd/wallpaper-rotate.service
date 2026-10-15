@@ -1,0 +1,10 @@
+[Unit]
+Description=Wissel de wallpaper en werk het pywal-kleurenschema bij
+Documentation=https://github.com/simondewaal1980/qtile-rice
+
+[Service]
+Type=oneshot
+# DISPLAY en XAUTHORITY erven we van de systemd-user-manager; die krijgt ze bij
+# het inloggen van de sessie mee. Verandert er niets? Controleer dan
+# 'systemctl --user show-environment' (daar moeten DISPLAY en XAUTHORITY in staan).
+ExecStart=%h/.config/qtile/scripts/wallpaper-rotate.sh
