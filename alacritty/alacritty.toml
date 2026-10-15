@@ -1,0 +1,24 @@
+# Alacritty-configuratie
+# De kleuren worden automatisch gegenereerd uit de wallpaper (pywal).
+# Regenerate: ~/.config/qtile/scripts/set-wallpaper.sh  (of mod+shift+w in qtile)
+
+[general]
+import = ["/home/simon/.cache/wal/colors-alacritty.toml"]
+
+[window]
+padding = { x = 10, y = 10 }
+# Vereist een compositor (picom); 1.0 = volledig dekkend.
+opacity = 0.95
+
+[font]
+size = 11
+normal = { family = "Noto Sans Mono", style = "Regular" }
+bold = { family = "Noto Sans Mono", style = "Bold" }
+italic = { family = "Noto Sans Mono", style = "Italic" }
+bold_italic = { family = "Noto Sans Mono", style = "Bold Italic" }
+
+[scrolling]
+history = 10000
+
+[cursor]
+style = { shape = "Block", blinking = "Off" }

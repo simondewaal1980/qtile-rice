@@ -1,0 +1,10 @@
+# Benodigde pakketten uit de officiële Arch-repo's
+# Installeren: sudo pacman -S --needed picom feh imagemagick xorg-xrdb git base-devel python-setuptools
+
+picom               # compositor (schaduwen, transparantie, afgeronde hoeken, blur)
+feh                 # wallpaper-viewer (optioneel; qtile tekent de achtergrond zelf)
+imagemagick         # kleur- en thumbnail-generatie (pywal + rofi-galerij)
+xorg-xrdb           # X-resources, zodat X-apps de pywal-kleuren gebruiken
+git                 # benodigd om AUR-pakketten te bouwen
+python-setuptools   # benodigd om AUR-pakketten te bouwen
+base-devel          # groep: compiler e.d. voor AUR-builds

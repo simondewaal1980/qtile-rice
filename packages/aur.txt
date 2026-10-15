@@ -1,0 +1,4 @@
+# Pakketten uit de AUR (Arch User Repository)
+# Bouwen: git clone https://aur.archlinux.org/<naam>.git && cd <naam> && makepkg -si
+
+python-pywal16      # 'wal' — genereert het kleurenschema uit de wallpaper (fork van pywal)

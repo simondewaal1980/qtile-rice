@@ -1,0 +1,25 @@
+/* Rofi-configuratie
+ * Documentatie: man rofi, man rofi-theme
+ * Gebruik:  rofi -show drun    -> applicatielauncher
+ *           rofi -show window  -> vensterkiezer
+ *           rofi -show run     -> commando uitvoeren
+ */
+
+configuration {
+    modes:               "drun,run,window";
+    font:                "Noto Sans 14";
+    show-icons:          true;
+    icon-theme:          "Adwaita";
+    terminal:            "alacritty";
+
+    drun-display-format: "{name}";
+    display-drun:        "Apps";
+    display-run:         "Run";
+    display-window:      "Windows";
+
+    case-smart:          true;
+}
+
+/* Kleuren komen uit pywal (gegenereerd uit de wallpaper).
+ * Zie ~/.config/qtile/scripts/set-wallpaper.sh */
+@theme "/home/simon/.cache/wal/colors-rofi-dark.rasi"
