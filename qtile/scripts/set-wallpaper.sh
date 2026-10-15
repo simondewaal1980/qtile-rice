@@ -1,7 +1,8 @@
 #!/usr/bin/env bash
 #
 # set-wallpaper.sh — genereert een kleurenschema uit de wallpaper met pywal
-#                     en past dat toe op qtile, rofi, alacritty en GTK-apps.
+#                     en past dat toe op qtile, rofi, alacritty, dunst en
+#                     GTK-apps.
 #
 # Gebruik:
 #   set-wallpaper.sh [pad/naar/afbeelding]
@@ -50,7 +51,12 @@ if [[ -x "${SCRIPT_DIR}/apply-gtk-theme.sh" ]]; then
     "${SCRIPT_DIR}/apply-gtk-theme.sh"
 fi
 
-# 4. qtile herladen zodat de nieuwe kleuren en wallpaper actief worden.
+# 4. dunst (notificaties) het nieuwe thema laten gebruiken.
+if [[ -x "${SCRIPT_DIR}/dunst-theme.sh" ]]; then
+    "${SCRIPT_DIR}/dunst-theme.sh"
+fi
+
+# 5. qtile herladen zodat de nieuwe kleuren en wallpaper actief worden.
 if command -v qtile >/dev/null 2>&1; then
     qtile cmd-obj -o cmd -f reload_config >/dev/null 2>&1 || true
 fi

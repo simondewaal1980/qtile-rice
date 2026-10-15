@@ -303,12 +303,14 @@ wmname = "LG3D"
 # --- Autostart -------------------------------------------------------------
 # Draait één keer bij het starten van de sessie:
 #   1. de compositor picom (schaduwen, transparantie, afgeronde hoeken);
-#   2. het wallpaperscript, dat een kleurenschema genereert en qtile herlaadt.
+#   2. de notificatiedaemon dunst (thema volgt pywal);
+#   3. het wallpaperscript, dat een kleurenschema genereert en qtile herlaadt.
 @hook.subscribe.startup_once
 def autostart() -> None:
     subprocess.Popen(
         ["picom", "--config", os.path.expanduser("~/.config/picom/picom.conf")]
     )
+    subprocess.Popen(["dunst"])
     subprocess.Popen(
         [os.path.expanduser("~/.config/qtile/scripts/set-wallpaper.sh")]
     )

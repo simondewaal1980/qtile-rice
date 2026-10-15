@@ -17,7 +17,7 @@ install_packages=false
 if ${install_packages}; then
     echo ">> Pakketten installeren (officiële repo's)…"
     sudo pacman -S --needed --noconfirm \
-        picom feh imagemagick xorg-xrdb git base-devel python-setuptools
+        picom dunst feh imagemagick xorg-xrdb git base-devel python-setuptools
 
     if ! pacman -Q python-pywal16 >/dev/null 2>&1; then
         echo ">> python-pywal16 uit de AUR bouwen…"

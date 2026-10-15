@@ -2,7 +2,7 @@
 
 Een complete, samenhangende desktop-opzet voor **Arch Linux + qtile (X11)**, waarbij
 het kleurenschema automatisch uit de wallpaper wordt gegenereerd en doorwerkt op
-qtile, rofi, de terminal en GTK-apps.
+qtile, rofi, de terminal, dunst (notificaties) en GTK-apps.
 
 ## Onderdelen
 
@@ -22,12 +22,16 @@ De wallpaper is de bron van het kleurenschema (via [pywal16](https://github.com/
 wal -i <wallpaper> -n        →  palet in ~/.cache/wal/
 ├── xrdb -merge              →  X-apps (xterm, urxvt, …)          ~/.cache/wal/colors.Xresources
 ├── apply-gtk-theme.sh       →  GTK3 + GTK4 + gsettings prefer-dark
+├── dunst-theme.sh           →  notificaties                       ~/.config/dunst/dunstrc
 └── qtile reload_config      →  balk, vensterranden, rofi, alacritty
 ```
 
 - `qtile/scripts/set-wallpaper.sh` — genereert het schema en past alles toe.
 - `qtile/scripts/apply-gtk-theme.sh` — schrijft `~/.cache/wal/gtk-colors.css` en laat
   `~/.config/gtk-{3,4}.0/gtk.css` dat importeren; zet `prefer-dark`.
+- `qtile/scripts/dunst-theme.sh` — genereert `~/.config/dunst/dunstrc` uit de
+  pywal-kleuren en herlaadt een draaiende dunst (`dunstctl reload`). De accentkleur
+  (`color2`) is de rand van gewone meldingen, `color1` die van kritieke.
 - `qtile/scripts/wallpaper-pick.sh` — rofi-galerij met thumbnails om een wallpaper te kiezen.
 - qtile tekent de achtergrond zelf (`wallpaper=` in `config.py`), daarom gebruikt
   pywal de optie `-n` (zet de wallpaper niet zelf).
@@ -54,13 +58,14 @@ Benodigde software staat in `packages/`. Automatisch installeren + alles op z'n 
 De pakketten handmatig:
 
 ```bash
-sudo pacman -S --needed picom feh imagemagick xorg-xrdb git base-devel python-setuptools
+sudo pacman -S --needed picom dunst feh imagemagick xorg-xrdb git base-devel python-setuptools
 # pywal16 uit de AUR:
 git clone https://aur.archlinux.org/python-pywal16.git && cd python-pywal16 && makepkg -si
 ```
 
-Daarna genereert `~/.config/qtile/scripts/set-wallpaper.sh` het schema en start
-`picom` automatisch bij de volgende login (via `@hook.subscribe.startup_once` in `config.py`).
+Daarna genereert `~/.config/qtile/scripts/set-wallpaper.sh` het schema en het
+dunst-thema; bij de volgende login starten `picom` en `dunst` automatisch mee
+(via `@hook.subscribe.startup_once` in `config.py`).
 
 ## Repo bijwerken vanuit de live-configuratie
 
