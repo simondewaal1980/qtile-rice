@@ -56,7 +56,12 @@ if [[ -x "${SCRIPT_DIR}/dunst-theme.sh" ]]; then
     "${SCRIPT_DIR}/dunst-theme.sh"
 fi
 
-# 5. qtile herladen zodat de nieuwe kleuren en wallpaper actief worden.
+# 5. OpenCode-thema (TUI) opnieuw genereren uit het zojuist gegenereerde palet.
+if [[ -x "${SCRIPT_DIR}/opencode-theme.sh" ]]; then
+    "${SCRIPT_DIR}/opencode-theme.sh"
+fi
+
+# 6. qtile herladen zodat de nieuwe kleuren en wallpaper actief worden.
 if command -v qtile >/dev/null 2>&1; then
     qtile cmd-obj -o cmd -f reload_config >/dev/null 2>&1 || true
 fi

@@ -6,3 +6,7 @@ __pycache__/
 *.swp
 *~
 .DS_Store
+
+# Gegenereerd opencode-thema (wordt uit de wallpaper opgebouwd).
+# Wordt bij installatie aangemaakt door qtile/scripts/opencode-theme.sh.
+opencode/themes/

@@ -2,7 +2,7 @@
 
 Een complete, samenhangende desktop-opzet voor **Arch Linux + qtile (X11)**, waarbij
 het kleurenschema automatisch uit de wallpaper wordt gegenereerd en doorwerkt op
-qtile, rofi, de terminal, dunst (notificaties) en GTK-apps.
+qtile, rofi, de terminal, dunst (notificaties), GTK-apps en OpenCode.
 
 ## Onderdelen
 
@@ -12,6 +12,7 @@ qtile, rofi, de terminal, dunst (notificaties) en GTK-apps.
 | `picom/` | compositor (schaduwen, transparantie, afgeronde hoeken, blur) |
 | `rofi/` | applicatielauncher (kleuren via pywal) |
 | `alacritty/` | terminal (kleuren via pywal) |
+| `opencode/` | OpenCode TUI (thema via pywal) |
 | `systemd/` | systemd-user-timer voor de automatische wallpaperwissel |
 | `wallpapers/` | script om een wallpaperset op te halen (Griekse landschappen & stadsgezichten) |
 | `packages/` | lijst met benodigde pakketten (officiële repo's + AUR) |
@@ -25,6 +26,7 @@ wal -i <wallpaper> -n        →  palet in ~/.cache/wal/
 ├── xrdb -merge              →  X-apps (xterm, urxvt, …)          ~/.cache/wal/colors.Xresources
 ├── apply-gtk-theme.sh       →  GTK3 + GTK4 + gsettings prefer-dark
 ├── dunst-theme.sh           →  notificaties                       ~/.config/dunst/dunstrc
+├── opencode-theme.sh        →  OpenCode-thema                     ~/.config/opencode/themes/wal.json
 └── qtile reload_config      →  balk, vensterranden, rofi, alacritty
 ```
 
@@ -34,6 +36,11 @@ wal -i <wallpaper> -n        →  palet in ~/.cache/wal/
 - `qtile/scripts/dunst-theme.sh` — genereert `~/.config/dunst/dunstrc` uit de
   pywal-kleuren en herlaadt een draaiende dunst (`dunstctl reload`). De accentkleur
   (`color2`) is de rand van gewone meldingen, `color1` die van kritieke.
+- `qtile/scripts/opencode-theme.sh` — genereert `~/.config/opencode/themes/wal.json`
+  uit het pywal-palet (de `200`-stap van elke kleur is exact de bijbehorende
+  pywal-kleur). `~/.config/opencode/cli.json` selecteert het thema
+  (`"theme": { "name": "wal", "mode": "dark" }`). Een nieuw thema wordt bij het
+  opstarten van OpenCode ingelezen.
 - `qtile/scripts/wallpaper-pick.sh` — rofi-galerij met thumbnails om een wallpaper te kiezen.
 - `qtile/scripts/wallpaper-rotate.sh` — kiest een (andere) willekeurige wallpaper en
   werkt het schema bij; aangeroepen door de systemd-timer (zie hieronder).
@@ -105,8 +112,8 @@ sudo pacman -S --needed picom dunst feh imagemagick xorg-xrdb git base-devel pyt
 git clone https://aur.archlinux.org/python-pywal16.git && cd python-pywal16 && makepkg -si
 ```
 
-Daarna genereert `~/.config/qtile/scripts/set-wallpaper.sh` het schema en het
-dunst-thema; bij de volgende login starten `picom` en `dunst` automatisch mee
+Daarna genereert `~/.config/qtile/scripts/set-wallpaper.sh` het schema en de
+thema's (dunst + OpenCode); bij de volgende login starten `picom` en `dunst` automatisch mee
 (via `@hook.subscribe.startup_once` in `config.py`). `install.sh` activeert ook
 meteen de timer die elke 10 minuten van wallpaper wisselt.
 

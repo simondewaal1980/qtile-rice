@@ -39,6 +39,7 @@ done
 copy "${CONFIG_DIR}/picom/picom.conf"          "${REPO_DIR}/picom/picom.conf"
 copy "${CONFIG_DIR}/rofi/config.rasi"          "${REPO_DIR}/rofi/config.rasi"
 copy "${CONFIG_DIR}/alacritty/alacritty.toml"  "${REPO_DIR}/alacritty/alacritty.toml"
+copy "${CONFIG_DIR}/opencode/cli.json"         "${REPO_DIR}/opencode/cli.json"
 
 cd "${REPO_DIR}"
 git add -A

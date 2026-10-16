@@ -30,13 +30,14 @@ fi
 
 echo ">> Configuraties kopiëren naar ${CONFIG_DIR}…"
 mkdir -p "${CONFIG_DIR}/qtile/scripts" "${CONFIG_DIR}/picom" \
-         "${CONFIG_DIR}/rofi" "${CONFIG_DIR}/alacritty"
+         "${CONFIG_DIR}/rofi" "${CONFIG_DIR}/alacritty" "${CONFIG_DIR}/opencode"
 
 install -m 644 "${REPO_DIR}/qtile/config.py"          "${CONFIG_DIR}/qtile/config.py"
 install -m 755 "${REPO_DIR}/qtile/scripts/"*.sh       "${CONFIG_DIR}/qtile/scripts/"
 install -m 644 "${REPO_DIR}/picom/picom.conf"         "${CONFIG_DIR}/picom/picom.conf"
 install -m 644 "${REPO_DIR}/rofi/config.rasi"         "${CONFIG_DIR}/rofi/config.rasi"
 install -m 644 "${REPO_DIR}/alacritty/alacritty.toml" "${CONFIG_DIR}/alacritty/alacritty.toml"
+install -m 644 "${REPO_DIR}/opencode/cli.json"        "${CONFIG_DIR}/opencode/cli.json"
 
 # systemd-user-timer die de wallpaper elke 10 minuten wisselt.
 mkdir -p "${CONFIG_DIR}/systemd/user"
