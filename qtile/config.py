@@ -497,6 +497,44 @@ screens = [
     ),
 ]
 
+# --- Balk verbergen bij fullscreen -----------------------------------------
+# Op X11 houdt Qtile de balk niet automatisch onder een fullscreen-venster.
+# Daardoor kan de balk boven een video op volledig scherm (bijv. YouTube)
+# komen te staan. Verberg de balk zolang er op dat scherm een venster op
+# volledig scherm staat en toon hem weer als dat venster sluit of verkleint.
+
+@hook.subscribe.float_change
+@hook.subscribe.changegroup
+@hook.subscribe.client_managed
+@hook.subscribe.startup
+@hook.subscribe.screens_reconfigured
+def _update_bar_visibility(*_args: object) -> None:
+    for screen in qtile.screens:
+        top = screen.top
+        if screen.group is None or not isinstance(top, bar.Bar):
+            continue
+
+        fullscreen = any(window.fullscreen for window in screen.group.windows)
+        # Onthoud of wij de balk hebben verborgen; een balk die de gebruiker
+        # zelf heeft verborgen moet niet ineens terugkomen.
+        hidden = getattr(top, "_hidden_for_fullscreen", False)
+
+        if fullscreen and top.is_show():
+            top.show(False)
+            top._hidden_for_fullscreen = True
+        elif not fullscreen and hidden:
+            top.show(True)
+            top._hidden_for_fullscreen = False
+
+
+@hook.subscribe.client_killed
+def _show_bar_after_client_close(_window: object) -> None:
+    # 'client_killed' komt binnen voordat het venster uit de groep verdwenen
+    # is. Wacht daarom kort, zodat een nog aanwezig fullscreen-venster de
+    # balk niet meteen weer laat verschijnen.
+    qtile.call_later(0.1, _update_bar_visibility)
+
+
 # Instead of screens, you can define a function here to specify which Screen
 # should correspond to which Output.
 fake_screens: list[Screen] | None = None
