@@ -42,9 +42,11 @@ fi
 wal -i "${img}" -n
 
 # 2. X-resources (xterm/urxvt e.a.) — pywal doet dit ook, expliciet voor de zekerheid.
+# Onder systemd kan DISPLAY wel bestaan maar XAUTHORITY (nog) niet; een
+# mislukte xrdb mag de rest van de themawissel niet tegenhouden.
 if [[ -n "${DISPLAY:-}" ]] && command -v xrdb >/dev/null 2>&1 \
     && [[ -f "${WAL_CACHE}/colors.Xresources" ]]; then
-    xrdb -merge -quiet "${WAL_CACHE}/colors.Xresources"
+    xrdb -merge -quiet "${WAL_CACHE}/colors.Xresources" || true
 fi
 
 # 3. GTK3/GTK4-apps.

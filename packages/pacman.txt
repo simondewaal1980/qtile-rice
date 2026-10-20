@@ -1,6 +1,8 @@
 # Benodigde pakketten uit de officiële Arch-repo's
-# Installeren: sudo pacman -S --needed kitty picom dunst feh imagemagick xorg-xrdb git base-devel python-setuptools
+# Installeren: sudo pacman -S --needed qtile rofi kitty picom dunst feh imagemagick xorg-xrdb git base-devel python-setuptools
 
+qtile               # window manager (X11)
+rofi                # applicatielauncher en wallpaperkiezer
 kitty               # terminal (kleuren via pywal)
 picom               # compositor (schaduwen, transparantie, afgeronde hoeken, blur)
 dunst               # notificatiedaemon (thema volgt pywal)

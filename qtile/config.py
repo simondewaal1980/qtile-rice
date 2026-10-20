@@ -1,5 +1,6 @@
 import json
 import os
+import shutil
 import subprocess
 from collections.abc import Callable
 
@@ -329,24 +330,43 @@ wmname = "LG3D"
 #      geluid naar de koptelefoon routeert;
 #   5. Vibe Typer (AppImage) met --autostart: start verborgen in het systeemvak;
 #   6. het wallpaperscript, dat een kleurenschema genereert en qtile herlaadt.
+
+def _spawn_if_available(*cmd: str) -> None:
+    """Start alleen programma's die daadwerkelijk bestaan.
+
+    Optionele autostart-items (blueman, een AppImage, ...) mogen op een andere
+    machine dan deze de rest van de autostart niet blokkeren.
+    """
+    executable = cmd[0]
+    if os.path.isabs(executable):
+        if not os.path.exists(executable):
+            return
+    elif shutil.which(executable) is None:
+        return
+    try:
+        subprocess.Popen(list(cmd))
+    except OSError:
+        pass
+
+
 @hook.subscribe.startup_once
 def autostart() -> None:
     # Kubuntu: geef DISPLAY/XAUTHORITY door aan de systemd-user-manager, zodat
     # de wallpaper-rotate.timer (systemd) een werkende X-verbinding heeft.
-    subprocess.Popen(
-        ["systemctl", "--user", "import-environment", "DISPLAY", "XAUTHORITY"]
+    _spawn_if_available(
+        "systemctl", "--user", "import-environment", "DISPLAY", "XAUTHORITY"
     )
-    subprocess.Popen(
-        ["picom", "--config", os.path.expanduser("~/.config/picom/picom.conf")]
+    _spawn_if_available(
+        "picom", "--config", os.path.expanduser("~/.config/picom/picom.conf")
     )
-    subprocess.Popen(["dunst"])
-    subprocess.Popen(["blueman-applet"])
-    subprocess.Popen(
-        [os.path.expanduser("~/.config/qtile/scripts/bluetooth-soundcore.sh")]
+    _spawn_if_available("dunst")
+    _spawn_if_available("blueman-applet")
+    _spawn_if_available(
+        os.path.expanduser("~/.config/qtile/scripts/bluetooth-soundcore.sh")
     )
-    subprocess.Popen(
-        [os.path.expanduser("~/AppImages/VibeTyper.AppImage"), "--autostart"]
+    _spawn_if_available(
+        os.path.expanduser("~/AppImages/VibeTyper.AppImage"), "--autostart"
     )
-    subprocess.Popen(
-        [os.path.expanduser("~/.config/qtile/scripts/set-wallpaper.sh")]
+    _spawn_if_available(
+        os.path.expanduser("~/.config/qtile/scripts/set-wallpaper.sh")
     )

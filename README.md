@@ -1,8 +1,12 @@
 # Qtile rice
 
-Een complete, samenhangende desktop-opzet voor **Arch Linux + qtile (X11)**, waarbij
-het kleurenschema automatisch uit de wallpaper wordt gegenereerd en doorwerkt op
-qtile, rofi, de terminal, dunst (notificaties), GTK-apps en OpenCode.
+Een complete, samenhangende desktop-opzet voor **Arch Linux of Ubuntu + qtile (X11)**,
+waarbij het kleurenschema automatisch uit de wallpaper wordt gegenereerd en doorwerkt
+op qtile, rofi, de terminal, dunst (notificaties), GTK-apps en OpenCode.
+
+De opzet is getest op **Ubuntu 26.04** (qtile 0.34, picom 12.5, rofi 2.0,
+kitty 0.45, dunst 1.12) en op Arch Linux. `install.sh --packages` kiest
+automatisch tussen pacman/AUR en apt/pipx.
 
 ## Onderdelen
 
@@ -17,7 +21,7 @@ qtile, rofi, de terminal, dunst (notificaties), GTK-apps en OpenCode.
 | `opencode/` | OpenCode TUI (thema via pywal) |
 | `systemd/` | systemd-user-timer voor de automatische wallpaperwissel |
 | `wallpapers/` | script om een wallpaperset op te halen (Griekse landschappen & stadsgezichten) |
-| `packages/` | lijst met benodigde pakketten (officiële repo's + AUR) |
+| `packages/` | pakketlijsten voor Arch (`pacman.txt` + `aur.txt`) en Ubuntu (`apt.txt`) |
 
 ## Hoe de theming werkt
 
@@ -104,19 +108,32 @@ automatisch op.
 Benodigde software staat in `packages/`. Automatisch installeren + alles op z'n plek zetten:
 
 ```bash
-./install.sh --packages     # installeert pakketten (pacman + AUR) én kopieert de configs
+./install.sh --packages     # kiest pacman/AUR (Arch) of apt/pipx (Ubuntu)
 ./install.sh                # alleen de configs kopiëren
 ```
 
 De pakketten handmatig:
 
 ```bash
-sudo pacman -S --needed kitty picom dunst feh imagemagick xorg-xrdb git base-devel python-setuptools
+# Arch Linux
+sudo pacman -S --needed qtile rofi kitty picom dunst feh imagemagick xorg-xrdb git base-devel python-setuptools
 # pywal16 uit de AUR:
 git clone https://aur.archlinux.org/python-pywal16.git && cd python-pywal16 && makepkg -si
-# of via pipx (zoals in deze setup):
+# of via pipx:
+pipx install pywal16
+
+# Ubuntu 26.04
+sudo apt update
+sudo apt install -y qtile rofi kitty picom dunst feh imagemagick x11-xserver-utils \
+  python3 python3-pip pipx git build-essential python3-setuptools libnotify-bin \
+  pulseaudio-utils bluez blueman pavucontrol libglib2.0-bin procps curl
 pipx install pywal16
 ```
+
+Op Ubuntu is `xrdb` onderdeel van `x11-xserver-utils` (niet van een los
+`xorg-xrdb`-pakket). Zorg dat `~/.local/bin` in je `PATH` staat
+(`pipx ensurepath`, daarna opnieuw inloggen), anders vindt het
+wallpaper-script `wal` niet.
 
 Daarna genereert `~/.config/qtile/scripts/set-wallpaper.sh` het schema en de
 thema's (dunst + OpenCode); bij de volgende login starten `picom` en `dunst` automatisch mee
@@ -153,5 +170,16 @@ omgekeerde: repo → live.
 - **Timer & DISPLAY**: de rotatie-service erft `DISPLAY`/`XAUTHORITY` van de
   systemd-user-manager (die ze bij het inloggen meekrijgt). Wisselt er niets?
   Controleer dan of `systemctl --user show-environment` beide variabelen toont.
+  De service zet `~/.local/bin` expliciet in `PATH`, zodat `wal` uit pipx ook
+  buiten een interactieve shell gevonden wordt.
+- **Ubuntu**: qtile 0.34 heeft nog geen `Output`-export; `config.py` valt daarop
+  terug. Verder zijn de gebruikte opties (`PulseVolume`, `Screen(wallpaper=…)`,
+  rofi 2.0-thema's, kitty-include met `~`) op Ubuntu 26.04 getest.
+- **Optionele autostart**: `blueman-applet`, de VibeTyper-AppImage en het
+  Bluetooth-script worden alleen gestart als ze bestaan. Ontbrekende optionele
+  apps blokkeren de rest van de autostart (inclusief de wallpaper) niet meer.
+- **pywal op Ubuntu 26.04**: ImageMagick 7 kan tijdens `wal` de melding
+  "Imagemagick couldn't generate a palette with magick" geven. pywal probeert
+  dan grotere paletten en rondt alsnog af; dit is niet fataal.
 - GTK4/libadwaita-apps laten zich maar beperkt extern stijlen (beperking van GTK,
   niet van deze opzet); GTK3-apps volgen `gtk.css` volledig.
