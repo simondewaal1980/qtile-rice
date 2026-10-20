@@ -37,7 +37,7 @@ automatisch actief.
 | <kbd>Super</kbd> + <kbd>L</kbd> | Focus naar het venster rechts |
 | <kbd>Super</kbd> + <kbd>J</kbd> | Focus naar het venster eronder |
 | <kbd>Super</kbd> + <kbd>K</kbd> | Focus naar het venster erboven |
-| <kbd>Super</kbd> + <kbd>O</kbd> | Volgende venster binnen de layout |
+| <kbd>Super</kbd> + <kbd>O</kbd> | Volgend venster binnen Bsp of Columns |
 | <kbd>Super</kbd> + <kbd>Tab</kbd> | Vensterkiezer openen met rofi |
 
 De richtingtoetsen volgen de **vim-indeling**: `H` links, `J` omlaag, `K`
@@ -162,22 +162,39 @@ daarmee de X-sessie.
 
 ## Mediatoetsen, volume, helderheid en vergrendelen
 
-| Toets | Actie |
-|---|---|
-| <kbd>Play/Pause</kbd> | Actieve mediaspeler afspelen of pauzeren |
-| <kbd>Volgende</kbd> / <kbd>Vorige</kbd> | Volgende of vorige track |
-| <kbd>Volume +</kbd> / <kbd>Volume −</kbd> | Volume met 5% aanpassen |
-| <kbd>Mute</kbd> | Geluid dempen of weer aanzetten |
-| <kbd>Mic mute</kbd> | Microfoon dempen of weer aanzetten |
-| <kbd>Helderheid +</kbd> / <kbd>Helderheid −</kbd> | Schermhelderheid met 5% aanpassen |
-| <kbd>Super</kbd> + <kbd>Esc</kbd> of <kbd>Screen lock</kbd> | Scherm vergrendelen |
+De mediatoetsen en de schermvergrendeltoets hebben geen modifier: qtile bindt
+de X11-toetsnamen rechtstreeks. In `config.py` staan ze daarom als
+`Key([], "XF86...")`; de vaste combinatie <kbd>Super</kbd> + <kbd>Esc</kbd>
+gebruikt `Key([mod], "Escape", ...)`.
+
+| Toets | Naam in config.py | Actie |
+|---|---|---|
+| <kbd>Play/Pause</kbd> | `XF86AudioPlay` | Actieve mediaspeler afspelen of pauzeren |
+| <kbd>Volgende</kbd> | `XF86AudioNext` | Volgende track |
+| <kbd>Vorige</kbd> | `XF86AudioPrev` | Vorige track |
+| <kbd>Volume +</kbd> | `XF86AudioRaiseVolume` | Volume met 5% omhoog |
+| <kbd>Volume −</kbd> | `XF86AudioLowerVolume` | Volume met 5% omlaag |
+| <kbd>Mute</kbd> | `XF86AudioMute` | Geluid dempen of weer aanzetten |
+| <kbd>Mic mute</kbd> | `XF86AudioMicMute` | Microfoon dempen of weer aanzetten |
+| <kbd>Helderheid +</kbd> | `XF86MonBrightnessUp` | Schermhelderheid met 5% omhoog |
+| <kbd>Helderheid −</kbd> | `XF86MonBrightnessDown` | Schermhelderheid met 5% omlaag |
+| <kbd>Screen lock</kbd> | `XF86ScreenSaver` | Scherm vergrendelen |
+| <kbd>Super</kbd> + <kbd>Esc</kbd> | `mod+Escape` | Scherm vergrendelen |
 
 De mediatoetsen werken via **MPRIS**: `media-control.sh` gebruikt `playerctl`
 als dat geïnstalleerd is en praat anders rechtstreeks met de speler via
-`gdbus`. Volume gaat via `pactl` (PulseAudio of PipeWire). Helderheid gaat via
+`gdbus`. Volume gaat via `pactl` (PulseAudio of PipeWire) en toont via dunst
+een melding met het nieuwe percentage. Helderheid gaat via
 `systemd-logind`, zodat een actieve lokale sessie geen root nodig heeft; als
 dat niet lukt, volgt een terugval op `brightnessctl`, sysfs of `xrandr`.
-Vergrendelen doet `lock.sh` met **xscreensaver**, dat via de autostart meedraait.
+Vergrendelen doet `lock.sh` met **xscreensaver**, dat via de autostart
+meedraait. Is xscreensaver niet actief, dan start het script de daemon zelf;
+lukt dat niet, dan vraagt het systemd-logind om de sessie te vergrendelen. De
+optie **Vergrendelen** in het power-menu gebruikt hetzelfde script.
+
+> **Tip:** wijkt de naam van een mediatoets af, bijvoorbeeld omdat je
+> toetsenbord een aparte pauzetoets heeft? Start `xev`, druk op de toets en
+> zoek in de uitvoer naar `keysym`. Die naam gebruik je in de `Key(...)`-regel.
 
 ## Muis
 
@@ -233,21 +250,22 @@ De weerwidget gebruikt `wttr.in` en heeft geen API-sleutel nodig. Onder de 15%
 accu wordt het percentage rood. De groepsiconen en enkele balkiconen zijn
 Font Awesome-glyphs; zonder dat font verschijnen er vierkantjes.
 
-## Wat is hier niet ingesteld?
+## Wat is hier nog niet ingesteld?
 
 Deze configuratie heeft **geen** sneltoetsen voor:
 
-- mediatoetsen (play/pause, volgende/vorige);
-- volume- of helderheidstoetsen;
-- scherm vergrendelen;
 - vensters naar een specifieke hoek of monitor sturen;
 - een idle-timer of automatische lock (de lijsten `idle_timers` en
   `idle_inhibitors` zijn leeg).
 
-Die kun je zelf toevoegen met een `Key(...)`-regel in de lijst `keys` in
-`~/.config/qtile/config.py`, liefst naast de andere `spawn`-sneltoetsen.
-Herlaad daarna met <kbd>Super</kbd> + <kbd>Ctrl</kbd> + <kbd>R</kbd>. Is het
-programma niet geïnstalleerd, dan gebeurt er niets.
+Mediatoetsen, volume, helderheid en handmatig vergrendelen zijn wél
+ingesteld; zie
+[Mediatoetsen, volume, helderheid en vergrendelen](#mediatoetsen-volume-helderheid-en-vergrendelen).
+De twee ontbrekende kun je zelf toevoegen met een `Key(...)`-regel in de lijst
+`keys` in `~/.config/qtile/config.py`, liefst naast de andere
+`spawn`-sneltoetsen. Herlaad daarna met
+<kbd>Super</kbd> + <kbd>Ctrl</kbd> + <kbd>R</kbd>. Is het programma niet
+geïnstalleerd, dan gebeurt er niets.
 
 ## Qtile-begrippen
 

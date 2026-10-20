@@ -49,7 +49,7 @@ body = md.convert(text)
 body = body.replace("<p>", '<p class="lead">', 1)
 # Houd een paar belangrijke tabellen in één stuk; de overige tabellen mogen
 # over een paginagrens doorlopen (met herhaalde kopregel).
-for header in ("Onderdeel", "Instelling", "Commando"):
+for header in ("Onderdeel", "Instelling", "Commando", "Toets"):
     body = body.replace(
         f"<table>\n<thead>\n<tr>\n<th>{header}</th>",
         f'<table class="keep">\n<thead>\n<tr>\n<th>{header}</th>',
