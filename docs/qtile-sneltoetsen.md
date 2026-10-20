@@ -122,10 +122,10 @@ Nieuwe vensters worden automatisch aan de juiste groep toegewezen via
 
 Deze configuratie gebruikt vier layouts:
 
-1. **TreeTab** — vensters staan als boom in een zijpaneel; het actieve venster
-   vult de rest van het scherm. Dit is de standaardlayout.
-2. **Bsp** — bspwm-achtige indeling: elk nieuw venster splitst de ruimte in
-   tweeën, afwisselend horizontaal en verticaal.
+1. **Bsp** — bspwm-achtige indeling: elk nieuw venster splitst de ruimte in
+   tweeën, afwisselend horizontaal en verticaal. Dit is de standaardlayout.
+2. **TreeTab** — vensters staan als boom in een zijpaneel; het actieve venster
+   vult de rest van het scherm.
 3. **Columns** — kolommen naast elkaar, met per kolom een stapel vensters.
 4. **Max** — elk venster vult het hele scherm; alleen het actieve venster is
    zichtbaar.
@@ -160,6 +160,25 @@ Herladen (<kbd>Ctrl</kbd> + <kbd>R</kbd>) is veilig: je sessie en vensters
 blijven bestaan. Afsluiten (<kbd>Ctrl</kbd> + <kbd>Q</kbd>) stopt qtile en
 daarmee de X-sessie.
 
+## Mediatoetsen, volume, helderheid en vergrendelen
+
+| Toets | Actie |
+|---|---|
+| <kbd>Play/Pause</kbd> | Actieve mediaspeler afspelen of pauzeren |
+| <kbd>Volgende</kbd> / <kbd>Vorige</kbd> | Volgende of vorige track |
+| <kbd>Volume +</kbd> / <kbd>Volume −</kbd> | Volume met 5% aanpassen |
+| <kbd>Mute</kbd> | Geluid dempen of weer aanzetten |
+| <kbd>Mic mute</kbd> | Microfoon dempen of weer aanzetten |
+| <kbd>Helderheid +</kbd> / <kbd>Helderheid −</kbd> | Schermhelderheid met 5% aanpassen |
+| <kbd>Super</kbd> + <kbd>Esc</kbd> of <kbd>Screen lock</kbd> | Scherm vergrendelen |
+
+De mediatoetsen werken via **MPRIS**: `media-control.sh` gebruikt `playerctl`
+als dat geïnstalleerd is en praat anders rechtstreeks met de speler via
+`gdbus`. Volume gaat via `pactl` (PulseAudio of PipeWire). Helderheid gaat via
+`systemd-logind`, zodat een actieve lokale sessie geen root nodig heeft; als
+dat niet lukt, volgt een terugval op `brightnessctl`, sysfs of `xrandr`.
+Vergrendelen doet `lock.sh` met **xscreensaver**, dat via de autostart meedraait.
+
 ## Muis
 
 | Actie | Resultaat |
@@ -188,8 +207,9 @@ wisselt.
 
 Het power-menu gebruikt rofi met `-hover-select` en
 `-me-accept-entry MousePrimary`, waardoor één muisklik op een optie genoeg is.
-Het wallpaper-menu toont thumbnails en werkt het pywal-kleurenschema bij zodra
-je een keuze maakt.
+De opties zijn **Vergrendelen**, **Uitzetten**, **Opnieuw opstarten** en
+**Uitloggen**. Het wallpaper-menu toont thumbnails en werkt het
+pywal-kleurenschema bij zodra je een keuze maakt.
 
 ## De bovenbalk
 
@@ -295,15 +315,15 @@ multi-monitoropstellingen; die staan hier op `None`.
 <kbd>Super</kbd> + <kbd>Shift</kbd> + <kbd>Tab</kbd> wissel je. Een group kan
 eigen layouts krijgen via `Group(layouts=...)`, maar dat is hier niet gebruikt.
 
-**TreeTab** — de standaardlayout: een boomstructuur in een zijpaneel, waarbij
-alleen het actieve venster de rest van het scherm vult. `J`/`K` gaan door de
-lijst, `H`/`L` klappen een vertakking in of uit en
+**Bsp** — de standaardlayout: bspwm-achtige indeling waarbij elk nieuw venster
+de beschikbare ruimte in tweeën splitst, afwisselend horizontaal en verticaal.
+Shuffle, grow, normalize en split werken op deze structuur.
+
+**TreeTab** — een boomstructuur in een zijpaneel, waarbij alleen het actieve
+venster de rest van het scherm vult. `J`/`K` gaan door de lijst, `H`/`L`
+klappen een vertakking in of uit en
 <kbd>Super</kbd> + <kbd>Shift</kbd> + <kbd>H</kbd>/<kbd>J</kbd>/<kbd>K</kbd>/<kbd>L</kbd>
 herschikt vensters binnen de boom.
-
-**Bsp** — bspwm-achtige indeling: elk nieuw venster splitst de beschikbare
-ruimte in tweeën, afwisselend horizontaal en verticaal. Shuffle, grow,
-normalize en split werken op deze structuur.
 
 **Columns** — kolommen naast elkaar, met in elke kolom een stapel vensters.
 `H`/`L` gaan tussen kolommen, `J`/`K` binnen een kolom. Shuffle, grow en
@@ -370,7 +390,7 @@ bij scrollen.
 
 **Hook** — een qtile-event dat code uitvoert. `@hook.subscribe.startup_once`
 draait één keer bij het starten; zo worden picom, dunst, blueman, het
-Bluetooth-script, Vibe Typer en `set-wallpaper.sh` gestart.
+Bluetooth-script, Vibe Typer, xscreensaver en `set-wallpaper.sh` gestart.
 
 **Autostart** — de programma's die via de `startup_once`-hook beginnen.
 `_spawn_if_available()` slaat optionele programma's over als ze niet bestaan,
@@ -424,6 +444,9 @@ blur. Zonder picom blijven de vensters vlak.
 power-menu. De kleuren komen uit pywal.
 
 **dunst** — de notificatiedaemon. Toont meldingen en volgt het pywal-thema.
+
+**xscreensaver** — schermbeveiliging en vergrendeling. De daemon start via de
+autostart; `lock.sh` vergrendelt de sessie met `xscreensaver-command -lock`.
 
 **kitty** — de terminalemulator en de standaardterminal in deze configuratie.
 

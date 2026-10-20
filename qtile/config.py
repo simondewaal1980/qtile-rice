@@ -25,6 +25,12 @@ terminal = "kitty"
 # dezelfde donkere kleuren als de rest van de desktop.
 os.environ.setdefault("QT_QPA_PLATFORMTHEME", "kde")
 
+
+def _script(name: str) -> str:
+    """Volledig pad naar een script in ~/.config/qtile/scripts."""
+    return os.path.expanduser(f"~/.config/qtile/scripts/{name}")
+
+
 keys = [
     # A list of available commands that can be bound to keys can be found
     # at https://docs.qtile.org/en/latest/manual/config/lazy.html
@@ -50,6 +56,77 @@ keys = [
     # Schermafdrukken: Print opent Spectacle, waarin je gebied, venster of
     # volledig scherm kiest en de opname kunt opslaan of kopiëren.
     Key([], "Print", lazy.spawn("spectacle"), desc="Schermafdruk maken met Spectacle"),
+    # Mediatoetsen: play/pause en volgende/vorige track via MPRIS.
+    Key(
+        [],
+        "XF86AudioPlay",
+        lazy.spawn(f"{_script('media-control.sh')} play-pause"),
+        desc="Afspelen/pauzeren",
+    ),
+    Key(
+        [],
+        "XF86AudioNext",
+        lazy.spawn(f"{_script('media-control.sh')} next"),
+        desc="Volgende track",
+    ),
+    Key(
+        [],
+        "XF86AudioPrev",
+        lazy.spawn(f"{_script('media-control.sh')} previous"),
+        desc="Vorige track",
+    ),
+    # Volume van de standaardsink (pactl; werkt met PulseAudio en PipeWire).
+    Key(
+        [],
+        "XF86AudioRaiseVolume",
+        lazy.spawn(f"{_script('volume.sh')} up"),
+        desc="Volume omhoog",
+    ),
+    Key(
+        [],
+        "XF86AudioLowerVolume",
+        lazy.spawn(f"{_script('volume.sh')} down"),
+        desc="Volume omlaag",
+    ),
+    Key(
+        [],
+        "XF86AudioMute",
+        lazy.spawn(f"{_script('volume.sh')} mute"),
+        desc="Volume dempen",
+    ),
+    Key(
+        [],
+        "XF86AudioMicMute",
+        lazy.spawn(f"{_script('volume.sh')} mic-mute"),
+        desc="Microfoon dempen",
+    ),
+    # Helderheid van het paneel (systemd-logind; terugval op xrandr).
+    Key(
+        [],
+        "XF86MonBrightnessUp",
+        lazy.spawn(f"{_script('brightness.sh')} up"),
+        desc="Helderheid omhoog",
+    ),
+    Key(
+        [],
+        "XF86MonBrightnessDown",
+        lazy.spawn(f"{_script('brightness.sh')} down"),
+        desc="Helderheid omlaag",
+    ),
+    # Scherm vergrendelen: XF86ScreenSaver op sommige laptops, Super+Escape
+    # werkt altijd.
+    Key(
+        [],
+        "XF86ScreenSaver",
+        lazy.spawn(_script("lock.sh")),
+        desc="Scherm vergrendelen",
+    ),
+    Key(
+        [mod],
+        "Escape",
+        lazy.spawn(_script("lock.sh")),
+        desc="Scherm vergrendelen",
+    ),
     Key(
         [mod],
         "o",
@@ -240,9 +317,19 @@ muted = _palette.get("color8", "#928374")
 surface = _palette.get("color0", "#282828")
 
 layouts = [
+    # Bsp is Qtile's bspwm-achtige indeling: elk nieuw venster splitst de
+    # beschikbare ruimte in tweeën (afwisselend horizontaal/verticaal).
+    # Staat bovenaan, dus standaard actief.
+    # Met mod+shift+Tab wissel je naar TreeTab, Columns of Max.
+    layout.Bsp(
+        border_focus=accent,
+        border_normal=muted,
+        border_width=4,
+        border_on_single=True,
+        ratio=1.6,
+    ),
     # TreeTab toont de vensters als boom in een zijpaneel; het actieve venster
-    # vult de rest van het scherm. Staat bovenaan, dus standaard actief.
-    # Met mod+shift+Tab wissel je naar Bsp, Columns of Max.
+    # vult de rest van het scherm.
     layout.TreeTab(
         font="Noto Sans",
         fontsize=14,
@@ -258,15 +345,6 @@ layouts = [
         section_fg=accent2,
         border_width=2,
         sections=["Vensters"],
-    ),
-    # Bsp is Qtile's bspwm-achtige indeling: elk nieuw venster splitst de
-    # beschikbare ruimte in tweeën (afwisselend horizontaal/verticaal).
-    layout.Bsp(
-        border_focus=accent,
-        border_normal=muted,
-        border_width=4,
-        border_on_single=True,
-        ratio=1.6,
     ),
     layout.Columns(
         border_focus=accent,
@@ -497,8 +575,9 @@ wmname = "LG3D"
 #   4. het script dat de soundcore Space One Pro automatisch verbindt en het
 #      geluid naar de koptelefoon routeert;
 #   5. Vibe Typer (AppImage) met --autostart: start verborgen in het systeemvak;
-#   6. het wallpaperscript, dat een kleurenschema genereert en qtile herlaadt;
-#   7. de Qt/KDE-omgevingsvariabele voor de systemd-user-manager, zodat ook
+#   6. xscreensaver, voor schermvergrendeling en schermbeveiliging;
+#   7. het wallpaperscript, dat een kleurenschema genereert en qtile herlaadt;
+#   8. de Qt/KDE-omgevingsvariabele voor de systemd-user-manager, zodat ook
 #      via D-Bus gestarte Qt-apps het Breeze/pywal-thema gebruiken.
 
 def _spawn_if_available(*cmd: str) -> None:
@@ -545,6 +624,7 @@ def autostart() -> None:
     _spawn_if_available(
         os.path.expanduser("~/AppImages/VibeTyper.AppImage"), "--autostart"
     )
+    _spawn_if_available("xscreensaver", "-no-splash")
     _spawn_if_available(
         os.path.expanduser("~/.config/qtile/scripts/set-wallpaper.sh")
     )

@@ -2,16 +2,18 @@
 #
 # power-menu.sh — dropdownmenu achter de power-knop in de qtile-balk.
 #
-# Toont met rofi een klein menu met uitzetten, opnieuw opstarten en
-# uitloggen. De power-knop staat rechts in de bovenbalk; het menu wordt
-# daarom rechtsboven, direct onder de balk, geplaatst.
+# Toont met rofi een klein menu met vergrendelen, uitzetten, opnieuw
+# opstarten en uitloggen. De power-knop staat rechts in de bovenbalk; het menu
+# wordt daarom rechtsboven, direct onder de balk, geplaatst.
 
 set -u
+
+lock_script=${XDG_CONFIG_HOME:-$HOME/.config}/qtile/scripts/lock.sh
 
 # Rofi centreert zijn venster standaard. Reken de offsets uit zodat het menu
 # toch onder de power-knop (rechtsboven) verschijnt.
 menu_w=250
-menu_h=168
+menu_h=220
 margin_x=8
 margin_y=6
 bar_h=44
@@ -52,7 +54,7 @@ inputbar {
     enabled: false;
 }
 listview {
-    lines: 3;
+    lines: 4;
     columns: 1;
     spacing: 4px;
     dynamic: false;
@@ -72,7 +74,7 @@ EOF
 # Rofi selecteert standaard alleen de rij onder de muis bij een klik; pas bij
 # een dubbele klik of Enter wordt de keuze uitgevoerd. Met hover-select en een
 # lege select-binding accepteren we de rij direct met één muisklik.
-choice=$(printf '%s\n' "Uitzetten" "Opnieuw opstarten" "Uitloggen" |
+choice=$(printf '%s\n' "Vergrendelen" "Uitzetten" "Opnieuw opstarten" "Uitloggen" |
     rofi -dmenu -no-custom -i -p "" -theme-str "$theme" \
         -hover-select -me-select-entry "" -me-accept-entry MousePrimary)
 
@@ -80,6 +82,9 @@ choice=$(printf '%s\n' "Uitzetten" "Opnieuw opstarten" "Uitloggen" |
 [[ -z ${choice} ]] && exit 0
 
 case "${choice}" in
+    "Vergrendelen")
+        "$lock_script"
+        ;;
     "Uitzetten")
         systemctl poweroff
         ;;

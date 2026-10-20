@@ -82,8 +82,12 @@ Het volledige overzicht staat in
 | `mod+Tab` | Vensterkiezer (rofi) |
 | `mod+Return` | Terminal (kitty) |
 | `Print` | Schermafdruk maken met Spectacle |
+| Media-toetsen | Afspelen/pauzeren, volgende/vorige track |
+| Volume-toetsen | Volume ±5%, dempen (ook microfoon) |
+| Helderheidstoetsen | Helderheid ±5% |
+| `mod+Esc` of schermvergrendeltoets | Scherm vergrendelen |
 | `mod+ctrl+r` | qtile-config herladen |
-| Klik op de ⏻-knop in de balk | Power-menu: uitzetten, opnieuw opstarten of uitloggen |
+| Klik op de ⏻-knop in de balk | Power-menu: vergrendelen, uitzetten, opnieuw opstarten of uitloggen |
 
 ## Automatische wallpaperwissel
 
