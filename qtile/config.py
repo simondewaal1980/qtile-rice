@@ -52,15 +52,13 @@ keys = [
     Key([mod, "control"], "j", lazy.layout.grow_down(), desc="Grow window down"),
     Key([mod, "control"], "k", lazy.layout.grow_up(), desc="Grow window up"),
     Key([mod], "n", lazy.layout.normalize(), desc="Reset all window sizes"),
-    # Toggle between split and unsplit sides of stack.
-    # Split = all windows displayed
-    # Unsplit = 1 window displayed, like Max layout, but still with
-    # multiple stack panes
+    # Bsp: wissel de splitrichting van het huidige venster (horizontaal/
+    # verticaal). Columns: toon alle stapels of juist één venster per stapel.
     Key(
         [mod, "shift"],
         "Return",
         lazy.layout.toggle_split(),
-        desc="Toggle between split and unsplit sides of stack",
+        desc="Toggle split direction (Bsp) / split view (Columns)",
     ),
     Key([mod], "Return", lazy.spawn(terminal), desc="Launch terminal"),
     # Toggle between different layouts as defined below
@@ -99,7 +97,30 @@ for vt in range(1, 8):
     )
 
 
-groups = [Group(i) for i in "123456789"]
+# --- Werkplekken -----------------------------------------------------------
+# De naam blijft 1 t/m 9, zodat mod+1 ... mod+9 ongewijzigd werkt. In de balk
+# tonen we echter een Font Awesome-icoon in plaats van het cijfer.
+# 'matches' zorgt dat een later gestart venster automatisch op de juiste
+# werkplek belandt; 'spawn' start de vaste apps bij het inloggen.
+# Indeling: 1 browser | 2 terminal | 3 bestanden | 4 code | 5 documenten
+#           6 foto's  | 7 video    | 8 games     | 9 Spotify
+workspaces = [
+    # naam, icoon, vensterregels, programma dat bij het inloggen start
+    ("1", "\uf268", [Match(wm_class="google-chrome")], "google-chrome-stable"),
+    ("2", "\uf120", [Match(wm_class="kitty")], terminal),
+    ("3", "\uf07b", [], None),
+    ("4", "\uf121", [], None),
+    ("5", "\uf02d", [], None),
+    ("6", "\uf03e", [], None),
+    ("7", "\uf008", [], None),
+    ("8", "\uf11b", [], None),
+    ("9", "\uf1bc", [Match(wm_class="spotify")], ["flatpak", "run", "com.spotify.Client"]),
+]
+
+groups = [
+    Group(name, label=icon, matches=matches, spawn=spawn)
+    for name, icon, matches, spawn in workspaces
+]
 
 for i in groups:
     keys.extend(
@@ -151,6 +172,17 @@ alert = _palette.get("color1", "#cc241d")
 muted = _palette.get("color8", "#928374")
 
 layouts = [
+    # Bsp is Qtile's bspwm-achtige indeling: elk nieuw venster splitst de
+    # beschikbare ruimte in tweeën (afwisselend horizontaal/verticaal).
+    # Staat bovenaan, zodat deze standaard actief is; met mod+shift+Tab
+    # wissel je naar Columns of Max.
+    layout.Bsp(
+        border_focus=accent,
+        border_normal=muted,
+        border_width=4,
+        border_on_single=True,
+        ratio=1.6,
+    ),
     layout.Columns(
         border_focus=accent,
         border_normal=muted,
@@ -160,7 +192,6 @@ layouts = [
     layout.Max(),
     # Try more layouts by unleashing below layouts.
     # layout.Stack(num_stacks=2),
-    # layout.Bsp(),
     # layout.Matrix(),
     # layout.MonadTall(),
     # layout.MonadWide(),
@@ -198,25 +229,29 @@ screens = [
     Screen(
         top=bar.Bar(
             [
-                widget.CurrentLayout(),
+                widget.CurrentLayout(mode="icon", scale=0.7, padding=8),
                 widget.GroupBox(
-                    active=accent,
-                    inactive=foreground,
-                    highlight_method="text",
+                    font="FontAwesome",
+                    fontsize=20,
+                    active=foreground,
+                    inactive=muted,
+                    highlight_method="block",
+                    block_highlight_text_color=background,
                     this_current_screen_border=accent,
                     other_current_screen_border=muted,
                     urgent_border=alert,
+                    rounded=True,
+                    borderwidth=0,
+                    padding_x=9,
+                    padding_y=3,
+                    margin_x=6,
+                    margin_y=5,
+                    spacing=4,
+                    disable_drag=True,
                 ),
                 widget.Prompt(),
+                widget.Sep(linewidth=1, padding=8, foreground=muted),
                 widget.WindowName(),
-                widget.Chord(
-                    chords_colors={
-                        "launch": (alert, foreground),
-                    },
-                    name_transform=lambda name: name.upper(),
-                ),
-                widget.TextBox("default config", name="default"),
-                widget.TextBox("Press &lt;M-r&gt; to spawn", foreground=accent2),
                 widget.GenPollCommand(
                     name="weather",
                     cmd=weather_command,
@@ -262,7 +297,14 @@ screens = [
                 # NB Systray is incompatible with Wayland, consider using StatusNotifier instead
                 # widget.StatusNotifier(),
                 widget.Systray(),
-                widget.Clock(format="%Y-%m-%d %a %I:%M %p"),
+                widget.TextBox(
+                    "\uf017",
+                    font="FontAwesome",
+                    fontsize=17,
+                    foreground=accent2,
+                    padding=4,
+                ),
+                widget.Clock(format="%a %d %b  %H:%M"),
                 # Power-knop: klik opent een dropdown (rofi) met uitzetten,
                 # opnieuw opstarten en uitloggen.
                 widget.TextBox(

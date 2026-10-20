@@ -1,25 +1,25 @@
 {
     "special": {
-        "background": "#162234",
-        "foreground": "#c4c7cc",
-        "cursor": "#c4c7cc"
+        "background": "#1b1b0b",
+        "foreground": "#c6c6c2",
+        "cursor": "#c6c6c2"
     },
     "colors": {
-        "color0": "#162234",
-        "color1": "#6388A8",
-        "color2": "#6FA0CF",
-        "color3": "#A2A2A3",
-        "color4": "#CCBCAE",
-        "color5": "#90AED1",
-        "color6": "#D1D2D3",
-        "color7": "#c4c7cc",
-        "color8": "#656e7c",
-        "color9": "#6388A8",
-        "color10": "#6FA0CF",
-        "color11": "#A2A2A3",
-        "color12": "#CCBCAE",
-        "color13": "#90AED1",
-        "color14": "#D1D2D3",
-        "color15": "#c4c7cc"
+        "color0": "#1b1b0b",
+        "color1": "#3F3E41",
+        "color2": "#514C4A",
+        "color3": "#645B56",
+        "color4": "#736862",
+        "color5": "#925B36",
+        "color6": "#89776C",
+        "color7": "#c6c6c2",
+        "color8": "#6f6f5a",
+        "color9": "#3F3E41",
+        "color10": "#514C4A",
+        "color11": "#645B56",
+        "color12": "#736862",
+        "color13": "#925B36",
+        "color14": "#89776C",
+        "color15": "#c6c6c2"
     }
 }
