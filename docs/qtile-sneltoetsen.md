@@ -131,7 +131,7 @@ dezelfde commando's, dus ook die vensters komen op werkplek 1 en 9 uit.
 | Sneltoets | Actie |
 |---|---|
 | <kbd>Super</kbd> + <kbd>Shift</kbd> + <kbd>Tab</kbd> | Naar de volgende layout |
-| <kbd>Super</kbd> + <kbd>Shift</kbd> + <kbd>Return</kbd> | Splitrichting wisselen (Bsp) / split/unsplit (Columns) |
+| <kbd>Super</kbd> + <kbd>Shift</kbd> + <kbd>S</kbd> | Splitrichting wisselen (Bsp) / split/unsplit (Columns) |
 
 Deze configuratie gebruikt vier layouts:
 
@@ -370,7 +370,7 @@ pywal-accentkleur (`color2`), niet-actieve randen zijn `muted` (`color8`).
 **Stack / stapel** — de vensters binnen één kolom in Columns. In unsplit-modus
 zie je alleen het actieve venster van de stapel; in split-modus zie je ze allemaal.
 
-**split / unsplit** — <kbd>Super</kbd> + <kbd>Shift</kbd> + <kbd>Return</kbd>
+**split / unsplit** — <kbd>Super</kbd> + <kbd>Shift</kbd> + <kbd>S</kbd>
 wisselt in Bsp de splitrichting van het actieve venster en schakelt in Columns
 tussen alle vensters van een stapel tonen (split) en alleen het actieve venster
 tonen (unsplit). Dit splitst dus geen nieuwe kolom; het toont of verbergt de
