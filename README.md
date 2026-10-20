@@ -22,6 +22,15 @@ automatisch tussen pacman/AUR en apt/pipx.
 | `systemd/` | systemd-user-timer voor de automatische wallpaperwissel |
 | `wallpapers/` | script om een wallpaperset op te halen (Griekse landschappen & stadsgezichten) |
 | `packages/` | pakketlijsten voor Arch (`pacman.txt` + `aur.txt`) en Ubuntu (`apt.txt`) |
+| `docs/` | sneltoetsenoverzicht (Markdown + PDF) en het buildscript |
+
+## Documentatie
+
+- **[Sneltoetsen & begrippen (Markdown)](docs/qtile-sneltoetsen.md)** — alle
+  sneltoetsen, muisacties en balkkliks, plus uitleg van de qtile-termen.
+- **[Sneltoetsen & begrippen (PDF)](docs/qtile-sneltoetsen.pdf)** — dezelfde
+  handleiding als A4-pdf voor offline gebruik. Opnieuw maken met
+  `./docs/build-pdf.sh`.
 
 ## Hoe de theming werkt
 
@@ -60,7 +69,11 @@ wal -i <wallpaper> -n        →  palet in ~/.cache/wal/
 - qtile tekent de achtergrond zelf (`wallpaper=` in `config.py`), daarom gebruikt
   pywal de optie `-n` (zet de wallpaper niet zelf).
 
-## Sneltoetsen (relevante)
+## Sneltoetsen
+
+Het volledige overzicht staat in
+[docs/qtile-sneltoetsen.md](docs/qtile-sneltoetsen.md) (en als
+[pdf](docs/qtile-sneltoetsen.pdf)). De belangrijkste:
 
 | Toets | Actie |
 |---|---|

@@ -10,3 +10,6 @@ __pycache__/
 # Gegenereerd opencode-thema (wordt uit de wallpaper opgebouwd).
 # Wordt bij installatie aangemaakt door qtile/scripts/opencode-theme.sh.
 opencode/themes/
+
+# Tijdelijke bestanden voor de pdf-build (docs/build-pdf.sh).
+docs/.build/
