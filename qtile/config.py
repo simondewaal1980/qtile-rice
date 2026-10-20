@@ -6,7 +6,7 @@ from collections.abc import Callable
 
 import libqtile.resources
 from libqtile import bar, hook, layout, qtile, widget
-from libqtile.config import Click, Drag, Group, Key, Match, Screen
+from libqtile.config import Click, Drag, DropDown, Group, Key, Match, ScratchPad, Screen
 
 try:  # qtile >= 0.35 exporteert Output; Ubuntu 26.04 (qtile 0.34) nog niet.
     from libqtile.config import Output
@@ -198,13 +198,23 @@ keys = [
     ),
     # Bsp: wissel de splitrichting van het huidige venster (horizontaal/
     # verticaal). Columns: toon alle stapels of juist één venster per stapel.
+    # (Super+Shift+Return is gereserveerd voor de scratchpad.)
     Key(
         [mod, "shift"],
-        "Return",
+        "s",
         lazy.layout.toggle_split().when(layout=["bsp", "columns"]),
         desc="Toggle split direction (Bsp) / split view (Columns)",
     ),
     Key([mod], "Return", lazy.spawn(terminal), desc="Launch terminal"),
+    # Dropdown-terminal (Quake-stijl): nogmaals indrukken verbergt hem,
+    # focus verliezen doet hetzelfde. De kitty-instance krijgt een eigen
+    # WM_CLASS, zodat hij niet door de gewone kitty-regel wordt opgevangen.
+    Key(
+        [mod, "shift"],
+        "Return",
+        lazy.group["scratchpad"].dropdown_toggle("kitty"),
+        desc="Toon/verberg de kitty-scratchpad",
+    ),
     # Toggle between different layouts as defined below
     Key([mod, "shift"], "Tab", lazy.next_layout(), desc="Toggle between layouts"),
     Key([mod], "w", lazy.window.kill(), desc="Kill focused window"),
@@ -289,6 +299,30 @@ for i in groups:
             #     desc="move focused window to group {}".format(i.name)),
         ]
     )
+
+# --- Scratchpad: dropdown-terminal -----------------------------------------
+# Een verborgen groep waarin de kitty-dropdown woont. Super+Shift+Enter haalt
+# hem van boven het scherm (Quake-stijl) en stopt hem weer weg. De eigen
+# WM_CLASS ('scratchpad') voorkomt dat de groep-Match van werkplek 2 hem pakt.
+scratchpad = ScratchPad(
+    "scratchpad",
+    dropdowns=[
+        DropDown(
+            "kitty",
+            f"{terminal} --class=scratchpad",
+            match=Match(wm_class="scratchpad"),
+            x=0.0,
+            y=0.0,
+            width=1.0,
+            height=0.45,
+            # kitty zelf is al transparant (background_opacity 0.75); laat
+            # Qtile daar geen tweede transparantielaag bovenop leggen.
+            opacity=1.0,
+            on_focus_lost_hide=True,
+        )
+    ],
+)
+groups.append(scratchpad)
 
 # --- Kleurenschema uit de wallpaper (pywal) --------------------------------
 # 'set-wallpaper.sh' schrijft de kleuren naar ~/.cache/wal/colors.json.
