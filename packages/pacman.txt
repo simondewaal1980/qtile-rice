@@ -1,5 +1,5 @@
 # Benodigde pakketten uit de officiële Arch-repo's
-# Installeren: sudo pacman -S --needed qtile rofi kitty picom dunst feh imagemagick xorg-xrdb git base-devel python-setuptools
+# Installeren: sudo pacman -S --needed qtile rofi kitty picom dunst feh imagemagick xorg-xrdb ttf-font-awesome git base-devel python-setuptools
 
 qtile               # window manager (X11)
 rofi                # applicatielauncher en wallpaperkiezer
@@ -9,6 +9,7 @@ dunst               # notificatiedaemon (thema volgt pywal)
 feh                 # wallpaper-viewer (optioneel; qtile tekent de achtergrond zelf)
 imagemagick         # kleur- en thumbnail-generatie (pywal + rofi-galerij)
 xorg-xrdb           # X-resources, zodat X-apps de pywal-kleuren gebruiken
+ttf-font-awesome    # pictogrammen in de qtile-balk (o.a. power-knop)
 git                 # benodigd om AUR-pakketten te bouwen
 python-setuptools   # benodigd om AUR-pakketten te bouwen
 base-devel          # groep: compiler e.d. voor AUR-builds

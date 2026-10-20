@@ -260,7 +260,21 @@ screens = [
                 # widget.StatusNotifier(),
                 widget.Systray(),
                 widget.Clock(format="%Y-%m-%d %a %I:%M %p"),
-                widget.QuickExit(),
+                # Power-knop: klik opent een dropdown (rofi) met uitzetten,
+                # opnieuw opstarten en uitloggen.
+                widget.TextBox(
+                    "\uf011",
+                    name="power",
+                    font="FontAwesome",
+                    fontsize=17,
+                    foreground=alert,
+                    padding=6,
+                    mouse_callbacks={
+                        "Button1": lazy.spawn(
+                            os.path.expanduser("~/.config/qtile/scripts/power-menu.sh")
+                        )
+                    },
+                ),
             ],
             44,
             # border_width=[2, 0, 2, 0],  # Draw top and bottom borders

@@ -20,7 +20,7 @@ if ${install_packages}; then
         echo ">> Pakketten installeren (Arch/pacman)…"
         sudo pacman -S --needed --noconfirm \
             qtile rofi kitty picom dunst feh imagemagick xorg-xrdb \
-            git base-devel python-setuptools
+            ttf-font-awesome git base-devel python-setuptools
 
         if ! pacman -Q python-pywal16 >/dev/null 2>&1; then
             echo ">> python-pywal16 uit de AUR bouwen…"
@@ -34,9 +34,9 @@ if ${install_packages}; then
         sudo apt-get update
         sudo apt-get install -y \
             qtile rofi kitty picom dunst feh imagemagick x11-xserver-utils \
-            python3 python3-pip pipx git build-essential python3-setuptools \
-            libnotify-bin pulseaudio-utils bluez blueman pavucontrol \
-            libglib2.0-bin procps curl
+            fonts-font-awesome python3 python3-pip pipx git build-essential \
+            python3-setuptools libnotify-bin pulseaudio-utils bluez blueman \
+            pavucontrol libglib2.0-bin procps curl
 
         if ! command -v wal >/dev/null 2>&1; then
             echo ">> pywal16 via pipx installeren…"

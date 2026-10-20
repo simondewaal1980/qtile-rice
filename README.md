@@ -69,6 +69,7 @@ wal -i <wallpaper> -n        →  palet in ~/.cache/wal/
 | `mod+Tab` | Vensterkiezer (rofi) |
 | `mod+Return` | Terminal (kitty) |
 | `mod+ctrl+r` | qtile-config herladen |
+| Klik op de ⏻-knop in de balk | Power-menu: uitzetten, opnieuw opstarten of uitloggen |
 
 ## Automatische wallpaperwissel
 
@@ -121,7 +122,7 @@ De pakketten handmatig:
 
 ```bash
 # Arch Linux
-sudo pacman -S --needed qtile rofi kitty picom dunst feh imagemagick xorg-xrdb git base-devel python-setuptools
+sudo pacman -S --needed qtile rofi kitty picom dunst feh imagemagick xorg-xrdb ttf-font-awesome git base-devel python-setuptools
 # pywal16 uit de AUR:
 git clone https://aur.archlinux.org/python-pywal16.git && cd python-pywal16 && makepkg -si
 # of via pipx:
@@ -130,8 +131,8 @@ pipx install pywal16
 # Ubuntu 26.04
 sudo apt update
 sudo apt install -y qtile rofi kitty picom dunst feh imagemagick x11-xserver-utils \
-  python3 python3-pip pipx git build-essential python3-setuptools libnotify-bin \
-  pulseaudio-utils bluez blueman pavucontrol libglib2.0-bin procps curl
+  fonts-font-awesome python3 python3-pip pipx git build-essential python3-setuptools \
+  libnotify-bin pulseaudio-utils bluez blueman pavucontrol libglib2.0-bin procps curl
 pipx install pywal16
 ```
 
