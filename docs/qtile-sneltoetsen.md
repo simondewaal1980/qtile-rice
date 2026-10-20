@@ -50,6 +50,9 @@ en `J`/`K` binnen een kolom. In TreeTab gaan `J`/`K` door de lijst en klappen
 | Sneltoets | Actie |
 |---|---|
 | <kbd>Super</kbd> + <kbd>Return</kbd> | Terminal starten (kitty) |
+| <kbd>Super</kbd> + <kbd>Shift</kbd> + <kbd>B</kbd> | Google Chrome starten (opent op werkplek 1) |
+| <kbd>Super</kbd> + <kbd>Shift</kbd> + <kbd>F</kbd> | Dolphin starten (bestandsbeheer) |
+| <kbd>Super</kbd> + <kbd>Shift</kbd> + <kbd>M</kbd> | Spotify starten (opent op werkplek 9) |
 | <kbd>Super</kbd> + <kbd>D</kbd> | Applicatielauncher openen (rofi) |
 | <kbd>Super</kbd> + <kbd>R</kbd> | Commando-prompt in de balk openen |
 | <kbd>Super</kbd> + <kbd>W</kbd> | Actief venster sluiten |
@@ -59,6 +62,14 @@ en `J`/`K` binnen een kolom. In TreeTab gaan `J`/`K` door de lijst en klappen
 > **Let op:** <kbd>Super</kbd> + <kbd>R</kbd> opent qtile's eigen prompt
 > (`widget.Prompt`) in de bovenbalk, geen rofi-venster. Typ daar een
 > shellcommando en druk op Enter.
+
+De drie app-sneltoetsen gebruiken hetzelfde commando als de `spawn` van de
+betreffende werkplek: `google-chrome-stable`, `dolphin` en
+`flatpak run com.spotify.Client`. Chrome en Spotify hebben een
+`Match(wm_class=...)`, dus die vensters belanden altijd op werkplek 1
+respectievelijk 9 — ook als je de sneltoets vanaf een andere werkplek indrukt.
+Dolphin heeft zo'n vensterregel niet en opent op de werkplek waar je op dat
+moment bent. Is een programma niet geïnstalleerd, dan gebeurt er niets.
 
 ## Vensters verplaatsen en formaat wijzigen
 
@@ -111,7 +122,9 @@ blijven, dan verwijder je `switch_group=True` in `config.py`.
 Nieuwe vensters worden automatisch aan de juiste groep toegewezen via
 `Match(wm_class=...)`: Chrome naar 1, kitty naar 2 en Spotify naar 9. De
 `spawn`-opdracht van een groep wordt uitgevoerd wanneer qtile de groep aanmaakt
-(bij het opstarten), waardoor die drie apps meteen starten.
+(bij het opstarten), waardoor die drie apps meteen starten. De app-sneltoetsen
+<kbd>Super</kbd> + <kbd>Shift</kbd> + <kbd>B</kbd> en <kbd>M</kbd> starten
+dezelfde commando's, dus ook die vensters komen op werkplek 1 en 9 uit.
 
 ## Layouts
 

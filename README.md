@@ -81,6 +81,9 @@ Het volledige overzicht staat in
 | `mod+d` | Applicatielauncher (rofi) |
 | `mod+Tab` | Vensterkiezer (rofi) |
 | `mod+Return` | Terminal (kitty) |
+| `mod+shift+b` | Google Chrome |
+| `mod+shift+f` | Dolphin (bestandsbeheer) |
+| `mod+shift+m` | Spotify |
 | `Print` | Schermafdruk maken met Spectacle |
 | Media-toetsen | Afspelen/pauzeren, volgende/vorige track |
 | Volume-toetsen | Volume ±5%, dempen (ook microfoon) |
