@@ -206,6 +206,14 @@ keys = [
         desc="Toggle split direction (Bsp) / split view (Columns)",
     ),
     Key([mod], "Return", lazy.spawn(terminal), desc="Launch terminal"),
+    Key([mod, "shift"], "b", lazy.spawn("google-chrome-stable"), desc="Launch Google Chrome"),
+    Key([mod, "shift"], "f", lazy.spawn("dolphin"), desc="Launch Dolphin (bestandsbeheer)"),
+    Key(
+        [mod, "shift"],
+        "m",
+        lazy.spawn(["flatpak", "run", "com.spotify.Client"]),
+        desc="Launch Spotify",
+    ),
     # Dropdown-terminal (Quake-stijl): nogmaals indrukken verbergt hem,
     # focus verliezen doet hetzelfde. De kitty-instance krijgt een eigen
     # WM_CLASS, zodat hij niet door de gewone kitty-regel wordt opgevangen.
