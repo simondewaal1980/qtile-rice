@@ -13,6 +13,7 @@ automatisch tussen pacman/AUR en apt/pipx.
 | Map | Doel |
 |---|---|
 | `qtile/` | qtile-configuratie (`config.py`) + hulpscripts |
+| `mimeapps.list` | standaardprogramma's per bestandstype (Dolphin/KDE) |
 | `picom/` | compositor (schaduwen, transparantie, afgeronde hoeken, blur) |
 | `rofi/` | applicatielauncher (kleuren via pywal) |
 | `kitty/` | terminal (kleuren via pywal) |

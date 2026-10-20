@@ -25,6 +25,12 @@ terminal = "kitty"
 # dezelfde donkere kleuren als de rest van de desktop.
 os.environ.setdefault("QT_QPA_PLATFORMTHEME", "kde")
 
+# KDE's kbuildsycoca6 zoekt zonder XDG_MENU_PREFIX naar applications.menu,
+# dat op dit systeem niet bestaat (wel plasma-applications.menu). Dan blijft
+# de KDE-dienstdatabase onvolledig en werken bestandskoppelingen in Dolphin
+# niet. De prefix zorgt dat de database met het juiste menu wordt opgebouwd.
+os.environ.setdefault("XDG_MENU_PREFIX", "plasma-")
+
 
 def _script(name: str) -> str:
     """Volledig pad naar een script in ~/.config/qtile/scripts."""

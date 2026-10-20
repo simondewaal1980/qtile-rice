@@ -33,6 +33,7 @@ copy() {
 }
 
 copy "${CONFIG_DIR}/qtile/config.py"           "${REPO_DIR}/qtile/config.py"
+copy "${CONFIG_DIR}/mimeapps.list"             "${REPO_DIR}/mimeapps.list"
 for s in "${CONFIG_DIR}/qtile/scripts/"*.sh; do
     copy "${s}" "${REPO_DIR}/qtile/scripts/$(basename "${s}")"
 done
