@@ -29,8 +29,20 @@ keys = [
     # A list of available commands that can be bound to keys can be found
     # at https://docs.qtile.org/en/latest/manual/config/lazy.html
     # Switch between windows
-    Key([mod], "h", lazy.layout.left(), desc="Move focus to left"),
-    Key([mod], "l", lazy.layout.right(), desc="Move focus to right"),
+    Key(
+        [mod],
+        "h",
+        lazy.layout.left().when(layout=["bsp", "columns"]),
+        lazy.layout.collapse_branch().when(layout="treetab"),
+        desc="Focus left / collapse tree branch",
+    ),
+    Key(
+        [mod],
+        "l",
+        lazy.layout.right().when(layout=["bsp", "columns"]),
+        lazy.layout.expand_branch().when(layout="treetab"),
+        desc="Focus right / expand tree branch",
+    ),
     Key([mod], "j", lazy.layout.down(), desc="Move focus down"),
     Key([mod], "k", lazy.layout.up(), desc="Move focus up"),
     Key([mod], "d", lazy.spawn("rofi -show drun"), desc="Launch rofi application launcher"),
@@ -38,26 +50,81 @@ keys = [
     # Schermafdrukken: Print opent Spectacle, waarin je gebied, venster of
     # volledig scherm kiest en de opname kunt opslaan of kopiëren.
     Key([], "Print", lazy.spawn("spectacle"), desc="Schermafdruk maken met Spectacle"),
-    Key([mod], "o", lazy.layout.next(), desc="Move window focus to other window"),
-    # Move windows between left/right columns or move up/down in current stack.
-    # Moving out of range in Columns layout will create new column.
-    Key([mod, "shift"], "h", lazy.layout.shuffle_left(), desc="Move window to the left"),
-    Key([mod, "shift"], "l", lazy.layout.shuffle_right(), desc="Move window to the right"),
-    Key([mod, "shift"], "j", lazy.layout.shuffle_down(), desc="Move window down"),
-    Key([mod, "shift"], "k", lazy.layout.shuffle_up(), desc="Move window up"),
-    # Grow windows. If current window is on the edge of screen and direction
-    # will be to screen edge - window would shrink.
-    Key([mod, "control"], "h", lazy.layout.grow_left(), desc="Grow window to the left"),
-    Key([mod, "control"], "l", lazy.layout.grow_right(), desc="Grow window to the right"),
-    Key([mod, "control"], "j", lazy.layout.grow_down(), desc="Grow window down"),
-    Key([mod, "control"], "k", lazy.layout.grow_up(), desc="Grow window up"),
-    Key([mod], "n", lazy.layout.normalize(), desc="Reset all window sizes"),
+    Key(
+        [mod],
+        "o",
+        lazy.layout.next().when(layout=["bsp", "columns"]),
+        desc="Move window focus to other window",
+    ),
+    # Move windows. In Bsp/Columns: shuffle within the tiling. In TreeTab:
+    # move the window within the tree (up/down) or out of its branch (left).
+    Key(
+        [mod, "shift"],
+        "h",
+        lazy.layout.shuffle_left().when(layout=["bsp", "columns"]),
+        lazy.layout.move_left().when(layout="treetab"),
+        desc="Move window left / out of tree branch",
+    ),
+    Key(
+        [mod, "shift"],
+        "l",
+        lazy.layout.shuffle_right().when(layout=["bsp", "columns"]),
+        lazy.layout.move_right().when(layout="treetab"),
+        desc="Move window right / into previous tree branch",
+    ),
+    Key(
+        [mod, "shift"],
+        "j",
+        lazy.layout.shuffle_down().when(layout=["bsp", "columns"]),
+        lazy.layout.move_down().when(layout="treetab"),
+        desc="Move window down",
+    ),
+    Key(
+        [mod, "shift"],
+        "k",
+        lazy.layout.shuffle_up().when(layout=["bsp", "columns"]),
+        lazy.layout.move_up().when(layout="treetab"),
+        desc="Move window up",
+    ),
+    # Grow windows in Bsp/Columns. In TreeTab these keys resize the panel.
+    Key(
+        [mod, "control"],
+        "h",
+        lazy.layout.grow_left().when(layout=["bsp", "columns"]),
+        lazy.layout.decrease_ratio().when(layout="treetab"),
+        desc="Grow window left / shrink tree panel",
+    ),
+    Key(
+        [mod, "control"],
+        "l",
+        lazy.layout.grow_right().when(layout=["bsp", "columns"]),
+        lazy.layout.increase_ratio().when(layout="treetab"),
+        desc="Grow window right / widen tree panel",
+    ),
+    Key(
+        [mod, "control"],
+        "j",
+        lazy.layout.grow_down().when(layout=["bsp", "columns"]),
+        desc="Grow window down",
+    ),
+    Key(
+        [mod, "control"],
+        "k",
+        lazy.layout.grow_up().when(layout=["bsp", "columns"]),
+        desc="Grow window up",
+    ),
+    Key(
+        [mod],
+        "n",
+        lazy.layout.normalize().when(layout=["bsp", "columns"]),
+        desc="Reset all window sizes",
+    ),
     # Bsp: wissel de splitrichting van het huidige venster (horizontaal/
     # verticaal). Columns: toon alle stapels of juist één venster per stapel.
     Key(
         [mod, "shift"],
         "Return",
-        lazy.layout.toggle_split(),
+        lazy.layout.toggle_split().when(layout=["bsp", "columns"]),
         desc="Toggle split direction (Bsp) / split view (Columns)",
     ),
     Key([mod], "Return", lazy.spawn(terminal), desc="Launch terminal"),
@@ -170,12 +237,30 @@ accent = _palette.get("color2", "#458588")
 accent2 = _palette.get("color4", "#83a598")
 alert = _palette.get("color1", "#cc241d")
 muted = _palette.get("color8", "#928374")
+surface = _palette.get("color0", "#282828")
 
 layouts = [
+    # TreeTab toont de vensters als boom in een zijpaneel; het actieve venster
+    # vult de rest van het scherm. Staat bovenaan, dus standaard actief.
+    # Met mod+shift+Tab wissel je naar Bsp, Columns of Max.
+    layout.TreeTab(
+        font="Noto Sans",
+        fontsize=14,
+        section_fontsize=12,
+        panel_width=220,
+        bg_color=background,
+        active_bg=accent,
+        active_fg=background,
+        inactive_bg=surface,
+        inactive_fg=foreground,
+        urgent_bg=alert,
+        urgent_fg=background,
+        section_fg=accent2,
+        border_width=2,
+        sections=["Vensters"],
+    ),
     # Bsp is Qtile's bspwm-achtige indeling: elk nieuw venster splitst de
     # beschikbare ruimte in tweeën (afwisselend horizontaal/verticaal).
-    # Staat bovenaan, zodat deze standaard actief is; met mod+shift+Tab
-    # wissel je naar Columns of Max.
     layout.Bsp(
         border_focus=accent,
         border_normal=muted,
@@ -197,7 +282,6 @@ layouts = [
     # layout.MonadWide(),
     # layout.RatioTile(),
     # layout.Tile(),
-    # layout.TreeTab(),
     # layout.VerticalTile(),
     # layout.Zoomy(),
 ]

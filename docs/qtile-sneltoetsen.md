@@ -41,8 +41,9 @@ automatisch actief.
 | <kbd>Super</kbd> + <kbd>Tab</kbd> | Vensterkiezer openen met rofi |
 
 De richtingtoetsen volgen de **vim-indeling**: `H` links, `J` omlaag, `K`
-omhoog, `L` rechts. In de Columns-layout gaan `H`/`L` tussen kolommen en
-`J`/`K` binnen een kolom.
+omhoog, `L` rechts. In Bsp en Columns gaan `H`/`L` tussen vensters of kolommen
+en `J`/`K` binnen een kolom. In TreeTab gaan `J`/`K` door de lijst en klappen
+`H`/`L` een vertakking in of uit.
 
 ### Starten en beheren
 
@@ -117,19 +118,24 @@ Nieuwe vensters worden automatisch aan de juiste groep toegewezen via
 | Sneltoets | Actie |
 |---|---|
 | <kbd>Super</kbd> + <kbd>Shift</kbd> + <kbd>Tab</kbd> | Naar de volgende layout |
-| <kbd>Super</kbd> + <kbd>Shift</kbd> + <kbd>Return</kbd> | Split/unsplit van de stapel in Columns |
+| <kbd>Super</kbd> + <kbd>Shift</kbd> + <kbd>Return</kbd> | Splitrichting wisselen (Bsp) / split/unsplit (Columns) |
 
-Deze configuratie gebruikt twee layouts:
+Deze configuratie gebruikt vier layouts:
 
-1. **Columns** — kolommen naast elkaar, met per kolom een stapel vensters.
-   Dit is de standaardlayout.
-2. **Max** — elk venster vult het hele scherm; alleen het actieve venster is
+1. **TreeTab** — vensters staan als boom in een zijpaneel; het actieve venster
+   vult de rest van het scherm. Dit is de standaardlayout.
+2. **Bsp** — bspwm-achtige indeling: elk nieuw venster splitst de ruimte in
+   tweeën, afwisselend horizontaal en verticaal.
+3. **Columns** — kolommen naast elkaar, met per kolom een stapel vensters.
+4. **Max** — elk venster vult het hele scherm; alleen het actieve venster is
    zichtbaar.
 
-<kbd>Super</kbd> + <kbd>Shift</kbd> + <kbd>Tab</kbd> wisselt tussen deze twee.
-De Columns-specifieke acties (shuffle, grow, split) hebben in Max geen effect.
-Gebruik in Max vooral <kbd>Super</kbd> + <kbd>O</kbd> of
-<kbd>Super</kbd> + <kbd>Tab</kbd> om van venster te wisselen.
+<kbd>Super</kbd> + <kbd>Shift</kbd> + <kbd>Tab</kbd> wisselt tussen deze vier.
+In TreeTab verplaats je vensters met <kbd>Super</kbd> + <kbd>Shift</kbd> +
+<kbd>H</kbd>/<kbd>J</kbd>/<kbd>K</kbd>/<kbd>L</kbd> binnen de boom;
+<kbd>Super</kbd> + <kbd>Ctrl</kbd> + <kbd>H</kbd>/<kbd>L</kbd> maakt het
+zijpaneel smaller of breder. De Columns-specifieke acties (shuffle, grow,
+split) hebben in Max geen effect.
 
 ## Sessie en systeem
 
@@ -192,7 +198,7 @@ rechts staan deze widgets:
 
 | Onderdeel | Betekenis | Muisactie |
 |---|---|---|
-| Layout-icoon | Huidige layout (Columns of Max) | — |
+| Layout-icoon | Huidige layout (TreeTab, Bsp, Columns of Max) | — |
 | Werkplekken | De negen groepen als icoon | Klik op een icoon om te wisselen |
 | Prompt | Verschijnt bij <kbd>Super</kbd> + <kbd>R</kbd> | Typ een commando, Enter om uit te voeren |
 | Vensternaam | Titel van het actieve venster | — |
@@ -285,13 +291,23 @@ multi-monitoropstellingen; die staan hier op `None`.
 ### Indeling en layouts
 
 **Layout** — het algoritme dat vensters rangschikt. Deze configuratie gebruikt
-`Columns` en `Max`. Met <kbd>Super</kbd> + <kbd>Shift</kbd> + <kbd>Tab</kbd>
-wissel je. Een group kan eigen layouts krijgen via `Group(layouts=...)`, maar
-dat is hier niet gebruikt.
+`TreeTab`, `Bsp`, `Columns` en `Max`. Met
+<kbd>Super</kbd> + <kbd>Shift</kbd> + <kbd>Tab</kbd> wissel je. Een group kan
+eigen layouts krijgen via `Group(layouts=...)`, maar dat is hier niet gebruikt.
 
-**Columns** — de standaardlayout: kolommen naast elkaar, met in elke kolom een
-stapel vensters. `H`/`L` gaan tussen kolommen, `J`/`K` binnen een kolom.
-Shuffle, grow en normalize werken op deze structuur.
+**TreeTab** — de standaardlayout: een boomstructuur in een zijpaneel, waarbij
+alleen het actieve venster de rest van het scherm vult. `J`/`K` gaan door de
+lijst, `H`/`L` klappen een vertakking in of uit en
+<kbd>Super</kbd> + <kbd>Shift</kbd> + <kbd>H</kbd>/<kbd>J</kbd>/<kbd>K</kbd>/<kbd>L</kbd>
+herschikt vensters binnen de boom.
+
+**Bsp** — bspwm-achtige indeling: elk nieuw venster splitst de beschikbare
+ruimte in tweeën, afwisselend horizontaal en verticaal. Shuffle, grow,
+normalize en split werken op deze structuur.
+
+**Columns** — kolommen naast elkaar, met in elke kolom een stapel vensters.
+`H`/`L` gaan tussen kolommen, `J`/`K` binnen een kolom. Shuffle, grow en
+normalize werken op deze structuur.
 
 **Max** — elke tegel vult het volledige scherm; je ziet alleen het actieve
 venster. Handig voor video, presentaties of gefocust browsen.
@@ -304,9 +320,10 @@ pywal-accentkleur (`color2`), niet-actieve randen zijn `muted` (`color8`).
 zie je alleen het actieve venster van de stapel; in split-modus zie je ze allemaal.
 
 **split / unsplit** — <kbd>Super</kbd> + <kbd>Shift</kbd> + <kbd>Return</kbd>
-schakelt tussen alle vensters van een stapel tonen (split) en alleen het actieve
-venster tonen (unsplit). Dit splitst dus geen nieuwe kolom; het toont of
-verbergt de inhoud van de stapel.
+wisselt in Bsp de splitrichting van het actieve venster en schakelt in Columns
+tussen alle vensters van een stapel tonen (split) en alleen het actieve venster
+tonen (unsplit). Dit splitst dus geen nieuwe kolom; het toont of verbergt de
+inhoud van de stapel.
 
 **shuffle** — verplaatst het actieve venster binnen de layout: naar een andere
 kolom of een andere positie in de stapel. Buiten het bereik maakt qtile een
