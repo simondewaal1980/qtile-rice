@@ -69,8 +69,12 @@ element selected {
 EOF
 )
 
+# Rofi selecteert standaard alleen de rij onder de muis bij een klik; pas bij
+# een dubbele klik of Enter wordt de keuze uitgevoerd. Met hover-select en een
+# lege select-binding accepteren we de rij direct met één muisklik.
 choice=$(printf '%s\n' "Uitzetten" "Opnieuw opstarten" "Uitloggen" |
-    rofi -dmenu -no-custom -i -p "" -theme-str "$theme")
+    rofi -dmenu -no-custom -i -p "" -theme-str "$theme" \
+        -hover-select -me-select-entry "" -me-accept-entry MousePrimary)
 
 # Escape, klik buiten het menu of een lege keuze: niets doen.
 [[ -z ${choice} ]] && exit 0
