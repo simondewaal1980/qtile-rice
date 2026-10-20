@@ -224,6 +224,25 @@ screens = [
                         "Button3": lazy.spawn("xdg-open 'https://wttr.in/Eindhoven'")
                     },
                 ),
+                # Accu: icoon + percentage. Ververs elke 30 seconden; onder de
+                # 15% kleurt het percentage rood (alert). Tijdens het laden
+                # staat er een bliksem, anders een accu-icoon.
+                widget.Battery(
+                    name="battery",
+                    format="{char} {percent:2.0%}",
+                    charge_char="⚡",
+                    discharge_char="🔋",
+                    full_char="🔋",
+                    empty_char="🪫",
+                    not_charging_char="🔌",
+                    unknown_char="❓",
+                    # Ook bij 100% het icoon + percentage tonen i.p.v. "Full".
+                    show_short_text=False,
+                    low_percentage=0.15,
+                    low_foreground=alert,
+                    foreground=accent2,
+                    update_interval=30,
+                ),
                 # Volume-regelaar: toont 🔊 (+ mute-icoon) van de standaardsink.
                 # Linksklik opent de geluidsinstellingen (pavucontrol),
                 # rechtsklik dempt, scrollen past het volume aan.
