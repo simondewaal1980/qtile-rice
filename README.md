@@ -81,6 +81,7 @@ Het volledige overzicht staat in
 | `mod+d` | Applicatielauncher (rofi) |
 | `mod+Tab` | Vensterkiezer (rofi) |
 | `mod+Return` | Terminal (kitty) |
+| `Print` | Schermafdruk maken met Spectacle |
 | `mod+ctrl+r` | qtile-config herladen |
 | Klik op de ⏻-knop in de balk | Power-menu: uitzetten, opnieuw opstarten of uitloggen |
 

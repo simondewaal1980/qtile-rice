@@ -138,10 +138,17 @@ Gebruik in Max vooral <kbd>Super</kbd> + <kbd>O</kbd> of
 | <kbd>Super</kbd> + <kbd>Ctrl</kbd> + <kbd>R</kbd> | qtile-configuratie herladen |
 | <kbd>Super</kbd> + <kbd>Ctrl</kbd> + <kbd>Q</kbd> | qtile afsluiten (beëindigt de sessie) |
 | <kbd>Super</kbd> + <kbd>Shift</kbd> + <kbd>W</kbd> | Wallpaper kiezen en kleurenschema aanpassen |
+| <kbd>Print</kbd> | Schermafdruk maken met Spectacle |
 | <kbd>Ctrl</kbd> + <kbd>Alt</kbd> + <kbd>F1</kbd> … <kbd>F7</kbd> | Naar virtual terminal 1 … 7 |
 
 De VT-combinatie is in deze config alleen actief onder **Wayland**. Op X11
 regelt Xorg de VT-wissel zelf, mits `DontVTSwitch` niet is ingeschakeld.
+
+Druk op <kbd>Print</kbd> om **Spectacle** te openen. Kies daarin een
+rechthoekig gebied, het actieve venster of het volledige scherm; daarna kun je
+de opname opslaan of naar het klembord kopiëren. Spectacle is de
+standaard-schermafdruktool van KDE en staat in `packages/apt.txt` en
+`packages/pacman.txt`.
 
 Herladen (<kbd>Ctrl</kbd> + <kbd>R</kbd>) is veilig: je sessie en vensters
 blijven bestaan. Afsluiten (<kbd>Ctrl</kbd> + <kbd>Q</kbd>) stopt qtile en
@@ -204,7 +211,6 @@ Font Awesome-glyphs; zonder dat font verschijnen er vierkantjes.
 
 Deze configuratie heeft **geen** sneltoetsen voor:
 
-- schermafbeeldingen maken;
 - mediatoetsen (play/pause, volgende/vorige);
 - volume- of helderheidstoetsen;
 - scherm vergrendelen;
@@ -212,15 +218,10 @@ Deze configuratie heeft **geen** sneltoetsen voor:
 - een idle-timer of automatische lock (de lijsten `idle_timers` en
   `idle_inhibitors` zijn leeg).
 
-Die kun je zelf toevoegen. Een schermafbeelding met bijvoorbeeld `flameshot`:
-
-```python
-Key([mod], "p", lazy.spawn("flameshot gui"), desc="Screenshot maken"),
-```
-
-Zet de regel in de lijst `keys` in `~/.config/qtile/config.py`, liefst naast de
-andere `spawn`-sneltoetsen, en herlaad met <kbd>Super</kbd> + <kbd>Ctrl</kbd> +
-<kbd>R</kbd>. Is het programma niet geïnstalleerd, dan gebeurt er niets.
+Die kun je zelf toevoegen met een `Key(...)`-regel in de lijst `keys` in
+`~/.config/qtile/config.py`, liefst naast de andere `spawn`-sneltoetsen.
+Herlaad daarna met <kbd>Super</kbd> + <kbd>Ctrl</kbd> + <kbd>R</kbd>. Is het
+programma niet geïnstalleerd, dan gebeurt er niets.
 
 ## Qtile-begrippen
 

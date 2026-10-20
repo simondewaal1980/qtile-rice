@@ -35,6 +35,9 @@ keys = [
     Key([mod], "k", lazy.layout.up(), desc="Move focus up"),
     Key([mod], "d", lazy.spawn("rofi -show drun"), desc="Launch rofi application launcher"),
     Key([mod], "Tab", lazy.spawn("rofi -show window"), desc="Switch window with rofi"),
+    # Schermafdrukken: Print opent Spectacle, waarin je gebied, venster of
+    # volledig scherm kiest en de opname kunt opslaan of kopiëren.
+    Key([], "Print", lazy.spawn("spectacle"), desc="Schermafdruk maken met Spectacle"),
     Key([mod], "o", lazy.layout.next(), desc="Move window focus to other window"),
     # Move windows between left/right columns or move up/down in current stack.
     # Moving out of range in Columns layout will create new column.

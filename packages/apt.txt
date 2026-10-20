@@ -4,7 +4,7 @@
 #   sudo apt install -y qtile rofi kitty picom dunst feh imagemagick \
 #     x11-xserver-utils fonts-font-awesome python3 python3-pip pipx \
 #     git build-essential python3-setuptools libnotify-bin \
-#     pulseaudio-utils bluez blueman pavucontrol libglib2.0-bin procps curl
+#     pulseaudio-utils bluez blueman pavucontrol spectacle libglib2.0-bin procps curl
 #
 # pywal16 staat niet in de Ubuntu-repo's; installeer het met pipx:
 #   pipx install pywal16
@@ -30,6 +30,7 @@ pulseaudio-utils    # pactl (Bluetooth-audio; werkt ook met PipeWire)
 bluez               # bluetoothctl
 blueman             # blueman-applet in de systray
 pavucontrol         # geluidsinstellingen vanuit de qtile-balk
+spectacle           # schermafdrukken vanaf de Print-toets
 libglib2.0-bin      # gsettings (GTK prefer-dark)
 procps              # pgrep (systemd ExecCondition)
 curl                # wallpapers ophalen
