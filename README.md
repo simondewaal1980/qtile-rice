@@ -31,6 +31,7 @@ De wallpaper is de bron van het kleurenschema (via [pywal16](https://github.com/
 wal -i <wallpaper> -n        →  palet in ~/.cache/wal/
 ├── xrdb -merge              →  X-apps (xterm, urxvt, …)          ~/.cache/wal/colors.Xresources
 ├── apply-gtk-theme.sh       →  GTK3 + GTK4 + gsettings prefer-dark
+├── apply-kde-theme.sh       →  KDE/Qt-kleurenschema               ~/.local/share/color-schemes/Pywal.colors
 ├── dunst-theme.sh           →  notificaties                       ~/.config/dunst/dunstrc
 ├── opencode-theme.sh        →  OpenCode-thema                     ~/.config/opencode/themes/wal.json
 └── qtile reload_config      →  balk, vensterranden, rofi, kitty
@@ -39,6 +40,10 @@ wal -i <wallpaper> -n        →  palet in ~/.cache/wal/
 - `qtile/scripts/set-wallpaper.sh` — genereert het schema en past alles toe.
 - `qtile/scripts/apply-gtk-theme.sh` — schrijft `~/.cache/wal/gtk-colors.css` en laat
   `~/.config/gtk-{3,4}.0/gtk.css` dat importeren; zet `prefer-dark`.
+- `qtile/scripts/apply-kde-theme.sh` — schrijft
+  `~/.local/share/color-schemes/Pywal.colors`, activeert dat schema en zet de
+  Breeze-widgetstijl, zodat KDE- en Qt-apps het pywal-palet volgen (via
+  `QT_QPA_PLATFORMTHEME=kde`).
 - `qtile/scripts/dunst-theme.sh` — genereert `~/.config/dunst/dunstrc` uit de
   pywal-kleuren en herlaadt een draaiende dunst (`dunstctl reload`). De accentkleur
   (`color2`) is de rand van gewone meldingen, `color1` die van kritieke.

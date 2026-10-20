@@ -2,7 +2,7 @@
 #
 # set-wallpaper.sh — genereert een kleurenschema uit de wallpaper met pywal
 #                     en past dat toe op qtile, rofi, kitty, dunst,
-#                     GTK-apps en Spotify.
+#                     GTK-apps, KDE/Qt-apps en Spotify.
 #
 # Gebruik:
 #   set-wallpaper.sh [pad/naar/afbeelding]
@@ -52,6 +52,11 @@ fi
 # 3. GTK3/GTK4-apps.
 if [[ -x "${SCRIPT_DIR}/apply-gtk-theme.sh" ]]; then
     "${SCRIPT_DIR}/apply-gtk-theme.sh"
+fi
+
+# 3b. KDE- en Qt-apps (Dolphin, Kate, ...): Breeze + pywal-kleurenschema.
+if [[ -x "${SCRIPT_DIR}/apply-kde-theme.sh" ]]; then
+    "${SCRIPT_DIR}/apply-kde-theme.sh"
 fi
 
 # 4. dunst (notificaties) het nieuwe thema laten gebruiken.

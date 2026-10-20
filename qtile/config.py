@@ -19,6 +19,12 @@ mod = "mod4"
 # Kubuntu: expliciet kitty als standaardterminal (i.p.v. guess_terminal()).
 terminal = "kitty"
 
+# Qt/KDE-apps (Dolphin, Kate, Gwenview, ...) gebruiken buiten Plasma standaard
+# een eigen licht palet. Met de KDE-platformthema-plugin lezen ze kdeglobals,
+# dat apply-kde-theme.sh met het pywal-kleurenschema vult. Zo volgen ze
+# dezelfde donkere kleuren als de rest van de desktop.
+os.environ.setdefault("QT_QPA_PLATFORMTHEME", "kde")
+
 keys = [
     # A list of available commands that can be bound to keys can be found
     # at https://docs.qtile.org/en/latest/manual/config/lazy.html
@@ -329,7 +335,9 @@ wmname = "LG3D"
 #   4. het script dat de soundcore Space One Pro automatisch verbindt en het
 #      geluid naar de koptelefoon routeert;
 #   5. Vibe Typer (AppImage) met --autostart: start verborgen in het systeemvak;
-#   6. het wallpaperscript, dat een kleurenschema genereert en qtile herlaadt.
+#   6. het wallpaperscript, dat een kleurenschema genereert en qtile herlaadt;
+#   7. de Qt/KDE-omgevingsvariabele voor de systemd-user-manager, zodat ook
+#      via D-Bus gestarte Qt-apps het Breeze/pywal-thema gebruiken.
 
 def _spawn_if_available(*cmd: str) -> None:
     """Start alleen programma's die daadwerkelijk bestaan.
@@ -355,6 +363,14 @@ def autostart() -> None:
     # de wallpaper-rotate.timer (systemd) een werkende X-verbinding heeft.
     _spawn_if_available(
         "systemctl", "--user", "import-environment", "DISPLAY", "XAUTHORITY"
+    )
+    # Qt-apps die via D-Bus/systemd gestart worden, moeten dezelfde KDE-
+    # platformthema-plugin gebruiken als de apps die qtile direct start.
+    _spawn_if_available(
+        "systemctl",
+        "--user",
+        "set-environment",
+        f"QT_QPA_PLATFORMTHEME={os.environ.get('QT_QPA_PLATFORMTHEME', 'kde')}",
     )
     _spawn_if_available(
         "picom", "--config", os.path.expanduser("~/.config/picom/picom.conf")
