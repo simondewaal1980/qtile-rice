@@ -5,12 +5,18 @@ from collections.abc import Callable
 
 import libqtile.resources
 from libqtile import bar, hook, layout, qtile, widget
-from libqtile.config import Click, Drag, Group, Key, Match, Output, Screen
+from libqtile.config import Click, Drag, Group, Key, Match, Screen
+
+try:  # qtile >= 0.35 exporteert Output; Ubuntu 26.04 (qtile 0.34) nog niet.
+    from libqtile.config import Output
+except ImportError:  # type: ignore[assignment,misc]
+    Output = object
 from libqtile.lazy import lazy
 from libqtile.utils import guess_terminal
 
 mod = "mod4"
-terminal = guess_terminal()
+# Kubuntu: expliciet kitty als standaardterminal (i.p.v. guess_terminal()).
+terminal = "kitty"
 
 keys = [
     # A list of available commands that can be bound to keys can be found
@@ -211,6 +217,19 @@ screens = [
                         "Button3": lazy.spawn("xdg-open 'https://wttr.in/Eindhoven'")
                     },
                 ),
+                # Volume-regelaar: toont 🔊 (+ mute-icoon) van de standaardsink.
+                # Linksklik opent de geluidsinstellingen (pavucontrol),
+                # rechtsklik dempt, scrollen past het volume aan.
+                widget.PulseVolume(
+                    name="volume",
+                    emoji=True,
+                    foreground=accent2,
+                    mute_foreground=alert,
+                    mouse_callbacks={
+                        "Button1": lazy.spawn("pavucontrol"),
+                        "Button3": lazy.widget["volume"].mute(),
+                    },
+                ),
                 # NB Systray is incompatible with Wayland, consider using StatusNotifier instead
                 # widget.StatusNotifier(),
                 widget.Systray(),
@@ -304,13 +323,30 @@ wmname = "LG3D"
 # Draait één keer bij het starten van de sessie:
 #   1. de compositor picom (schaduwen, transparantie, afgeronde hoeken);
 #   2. de notificatiedaemon dunst (thema volgt pywal);
-#   3. het wallpaperscript, dat een kleurenschema genereert en qtile herlaadt.
+#   3. het Bluetooth-tray-icoon (blueman-applet) voor de Systray-widget in de
+#      bar; klik erop voor het menu, dubbelklik opent blueman-manager;
+#   4. het script dat de soundcore Space One Pro automatisch verbindt en het
+#      geluid naar de koptelefoon routeert;
+#   5. Vibe Typer (AppImage) met --autostart: start verborgen in het systeemvak;
+#   6. het wallpaperscript, dat een kleurenschema genereert en qtile herlaadt.
 @hook.subscribe.startup_once
 def autostart() -> None:
+    # Kubuntu: geef DISPLAY/XAUTHORITY door aan de systemd-user-manager, zodat
+    # de wallpaper-rotate.timer (systemd) een werkende X-verbinding heeft.
+    subprocess.Popen(
+        ["systemctl", "--user", "import-environment", "DISPLAY", "XAUTHORITY"]
+    )
     subprocess.Popen(
         ["picom", "--config", os.path.expanduser("~/.config/picom/picom.conf")]
     )
     subprocess.Popen(["dunst"])
+    subprocess.Popen(["blueman-applet"])
+    subprocess.Popen(
+        [os.path.expanduser("~/.config/qtile/scripts/bluetooth-soundcore.sh")]
+    )
+    subprocess.Popen(
+        [os.path.expanduser("~/AppImages/VibeTyper.AppImage"), "--autostart"]
+    )
     subprocess.Popen(
         [os.path.expanduser("~/.config/qtile/scripts/set-wallpaper.sh")]
     )

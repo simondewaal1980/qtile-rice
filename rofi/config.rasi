@@ -10,7 +10,7 @@ configuration {
     font:                "Noto Sans 14";
     show-icons:          true;
     icon-theme:          "Adwaita";
-    terminal:            "alacritty";
+    terminal:            "kitty";
 
     drun-display-format: "{name}";
     display-drun:        "Apps";
@@ -22,4 +22,4 @@ configuration {
 
 /* Kleuren komen uit pywal (gegenereerd uit de wallpaper).
  * Zie ~/.config/qtile/scripts/set-wallpaper.sh */
-@theme "/home/simon/.cache/wal/colors-rofi-dark.rasi"
+@theme "~/.cache/wal/colors-rofi-dark.rasi"

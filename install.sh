@@ -17,7 +17,7 @@ install_packages=false
 if ${install_packages}; then
     echo ">> Pakketten installeren (officiële repo's)…"
     sudo pacman -S --needed --noconfirm \
-        picom dunst feh imagemagick xorg-xrdb git base-devel python-setuptools
+        kitty picom dunst feh imagemagick xorg-xrdb git base-devel python-setuptools
 
     if ! pacman -Q python-pywal16 >/dev/null 2>&1; then
         echo ">> python-pywal16 uit de AUR bouwen…"
@@ -30,14 +30,25 @@ fi
 
 echo ">> Configuraties kopiëren naar ${CONFIG_DIR}…"
 mkdir -p "${CONFIG_DIR}/qtile/scripts" "${CONFIG_DIR}/picom" \
-         "${CONFIG_DIR}/rofi" "${CONFIG_DIR}/alacritty" "${CONFIG_DIR}/opencode"
+         "${CONFIG_DIR}/rofi" "${CONFIG_DIR}/kitty" \
+         "${CONFIG_DIR}/opencode" "${CONFIG_DIR}/wal/colorschemes/dark" \
+         "${CONFIG_DIR}/wal/templates"
 
 install -m 644 "${REPO_DIR}/qtile/config.py"          "${CONFIG_DIR}/qtile/config.py"
 install -m 755 "${REPO_DIR}/qtile/scripts/"*.sh       "${CONFIG_DIR}/qtile/scripts/"
 install -m 644 "${REPO_DIR}/picom/picom.conf"         "${CONFIG_DIR}/picom/picom.conf"
 install -m 644 "${REPO_DIR}/rofi/config.rasi"         "${CONFIG_DIR}/rofi/config.rasi"
-install -m 644 "${REPO_DIR}/alacritty/alacritty.toml" "${CONFIG_DIR}/alacritty/alacritty.toml"
+install -m 644 "${REPO_DIR}/kitty/kitty.conf"         "${CONFIG_DIR}/kitty/kitty.conf"
 install -m 644 "${REPO_DIR}/opencode/cli.json"        "${CONFIG_DIR}/opencode/cli.json"
+
+# pywal: colorschemes (o.a. 'current') en eventuele eigen templates.
+if compgen -G "${REPO_DIR}/wal/colorschemes/dark/*.json" >/dev/null; then
+    install -m 644 "${REPO_DIR}/wal/colorschemes/dark/"*.json \
+        "${CONFIG_DIR}/wal/colorschemes/dark/"
+fi
+if compgen -G "${REPO_DIR}/wal/templates/*" >/dev/null; then
+    install -m 644 "${REPO_DIR}/wal/templates/"* "${CONFIG_DIR}/wal/templates/"
+fi
 
 # systemd-user-timer die de wallpaper elke 10 minuten wisselt.
 mkdir -p "${CONFIG_DIR}/systemd/user"

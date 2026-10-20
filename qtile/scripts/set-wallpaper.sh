@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 #
 # set-wallpaper.sh — genereert een kleurenschema uit de wallpaper met pywal
-#                     en past dat toe op qtile, rofi, alacritty, dunst en
-#                     GTK-apps.
+#                     en past dat toe op qtile, rofi, kitty, dunst,
+#                     GTK-apps en Spotify.
 #
 # Gebruik:
 #   set-wallpaper.sh [pad/naar/afbeelding]
@@ -42,7 +42,8 @@ fi
 wal -i "${img}" -n
 
 # 2. X-resources (xterm/urxvt e.a.) — pywal doet dit ook, expliciet voor de zekerheid.
-if command -v xrdb >/dev/null 2>&1 && [[ -f "${WAL_CACHE}/colors.Xresources" ]]; then
+if [[ -n "${DISPLAY:-}" ]] && command -v xrdb >/dev/null 2>&1 \
+    && [[ -f "${WAL_CACHE}/colors.Xresources" ]]; then
     xrdb -merge -quiet "${WAL_CACHE}/colors.Xresources"
 fi
 
@@ -61,7 +62,13 @@ if [[ -x "${SCRIPT_DIR}/opencode-theme.sh" ]]; then
     "${SCRIPT_DIR}/opencode-theme.sh"
 fi
 
-# 6. qtile herladen zodat de nieuwe kleuren en wallpaper actief worden.
+# 6. Spotify (via Spicetify) het nieuwe palet laten gebruiken. Mislukt dit
+#    (bijv. na een Spotify-update), dan gaat de wallpaperwissel gewoon door.
+if [[ -x "${SCRIPT_DIR}/spotify-theme.sh" ]]; then
+    "${SCRIPT_DIR}/spotify-theme.sh" || true
+fi
+
+# 7. qtile herladen zodat de nieuwe kleuren en wallpaper actief worden.
 if command -v qtile >/dev/null 2>&1; then
     qtile cmd-obj -o cmd -f reload_config >/dev/null 2>&1 || true
 fi

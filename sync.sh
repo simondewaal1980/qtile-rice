@@ -38,8 +38,36 @@ for s in "${CONFIG_DIR}/qtile/scripts/"*.sh; do
 done
 copy "${CONFIG_DIR}/picom/picom.conf"          "${REPO_DIR}/picom/picom.conf"
 copy "${CONFIG_DIR}/rofi/config.rasi"          "${REPO_DIR}/rofi/config.rasi"
+copy "${CONFIG_DIR}/kitty/kitty.conf"          "${REPO_DIR}/kitty/kitty.conf"
 copy "${CONFIG_DIR}/alacritty/alacritty.toml"  "${REPO_DIR}/alacritty/alacritty.toml"
 copy "${CONFIG_DIR}/opencode/cli.json"         "${REPO_DIR}/opencode/cli.json"
+
+# pywal-configuratie: colorschemes en templates.
+if [[ -d "${CONFIG_DIR}/wal" ]]; then
+    mkdir -p "${REPO_DIR}/wal"
+    cp -a "${CONFIG_DIR}/wal/." "${REPO_DIR}/wal/"
+fi
+
+# Momentopname van het actieve palet, zodat de repo ook zonder cache een
+# voorbeeldtheme heeft. Wordt bij elke sync ververst.
+WAL_COLORS="${XDG_CACHE_HOME:-${HOME}/.cache}/wal/colors.json"
+if [[ -f "${WAL_COLORS}" ]]; then
+    mkdir -p "${REPO_DIR}/wal/colorschemes/dark"
+    python3 - "${WAL_COLORS}" "${REPO_DIR}/wal/colorschemes/dark/current.json" <<'PY'
+"""Bewaar het actieve pywal-palet als colorscheme (wal --theme current)."""
+import json
+import sys
+
+src, dst = sys.argv[1], sys.argv[2]
+with open(src, encoding="utf-8") as fh:
+    palette = json.load(fh)
+
+scheme = {"special": palette["special"], "colors": palette["colors"]}
+with open(dst, "w", encoding="utf-8") as fh:
+    json.dump(scheme, fh, indent=4, ensure_ascii=False)
+    fh.write("\n")
+PY
+fi
 
 cd "${REPO_DIR}"
 git add -A

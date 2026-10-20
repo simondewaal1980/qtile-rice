@@ -4,6 +4,8 @@ Documentation=https://github.com/simondewaal1980/qtile-rice
 
 [Service]
 Type=oneshot
+# Alleen draaien als qtile actief is (dus niet in een Plasma-sessie).
+ExecCondition=/usr/bin/pgrep -x qtile
 # DISPLAY en XAUTHORITY erven we van de systemd-user-manager; die krijgt ze bij
 # het inloggen van de sessie mee. Verandert er niets? Controleer dan
 # 'systemctl --user show-environment' (daar moeten DISPLAY en XAUTHORITY in staan).

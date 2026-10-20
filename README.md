@@ -11,7 +11,9 @@ qtile, rofi, de terminal, dunst (notificaties), GTK-apps en OpenCode.
 | `qtile/` | qtile-configuratie (`config.py`) + hulpscripts |
 | `picom/` | compositor (schaduwen, transparantie, afgeronde hoeken, blur) |
 | `rofi/` | applicatielauncher (kleuren via pywal) |
-| `alacritty/` | terminal (kleuren via pywal) |
+| `kitty/` | terminal (kleuren via pywal) |
+| `wal/` | pywal16-configuratie + voorbeeldpalet (`current`) |
+| `alacritty/` | optionele/oude terminalconfig (wordt niet standaard geïnstalleerd) |
 | `opencode/` | OpenCode TUI (thema via pywal) |
 | `systemd/` | systemd-user-timer voor de automatische wallpaperwissel |
 | `wallpapers/` | script om een wallpaperset op te halen (Griekse landschappen & stadsgezichten) |
@@ -27,7 +29,7 @@ wal -i <wallpaper> -n        →  palet in ~/.cache/wal/
 ├── apply-gtk-theme.sh       →  GTK3 + GTK4 + gsettings prefer-dark
 ├── dunst-theme.sh           →  notificaties                       ~/.config/dunst/dunstrc
 ├── opencode-theme.sh        →  OpenCode-thema                     ~/.config/opencode/themes/wal.json
-└── qtile reload_config      →  balk, vensterranden, rofi, alacritty
+└── qtile reload_config      →  balk, vensterranden, rofi, kitty
 ```
 
 - `qtile/scripts/set-wallpaper.sh` — genereert het schema en past alles toe.
@@ -41,6 +43,8 @@ wal -i <wallpaper> -n        →  palet in ~/.cache/wal/
   pywal-kleur). `~/.config/opencode/cli.json` selecteert het thema
   (`"theme": { "name": "wal", "mode": "dark" }`). Een nieuw thema wordt bij het
   opstarten van OpenCode ingelezen.
+- `wal/colorschemes/dark/current.json` — momentopname van het actieve palet.
+  Terugzetten kan met `wal --theme current`; `sync.sh` ververst de momentopname.
 - `qtile/scripts/wallpaper-pick.sh` — rofi-galerij met thumbnails om een wallpaper te kiezen.
 - `qtile/scripts/wallpaper-rotate.sh` — kiest een (andere) willekeurige wallpaper en
   werkt het schema bij; aangeroepen door de systemd-timer (zie hieronder).
@@ -54,7 +58,7 @@ wal -i <wallpaper> -n        →  palet in ~/.cache/wal/
 | `mod+shift+w` | Wallpaper kiezen (galerij) → nieuw kleurenschema |
 | `mod+d` | Applicatielauncher (rofi) |
 | `mod+Tab` | Vensterkiezer (rofi) |
-| `mod+Return` | Terminal (alacritty) |
+| `mod+Return` | Terminal (kitty) |
 | `mod+ctrl+r` | qtile-config herladen |
 
 ## Automatische wallpaperwissel
@@ -107,9 +111,11 @@ Benodigde software staat in `packages/`. Automatisch installeren + alles op z'n 
 De pakketten handmatig:
 
 ```bash
-sudo pacman -S --needed picom dunst feh imagemagick xorg-xrdb git base-devel python-setuptools
+sudo pacman -S --needed kitty picom dunst feh imagemagick xorg-xrdb git base-devel python-setuptools
 # pywal16 uit de AUR:
 git clone https://aur.archlinux.org/python-pywal16.git && cd python-pywal16 && makepkg -si
+# of via pipx (zoals in deze setup):
+pipx install pywal16
 ```
 
 Daarna genereert `~/.config/qtile/scripts/set-wallpaper.sh` het schema en de
@@ -126,11 +132,17 @@ Pas je iets aan in `~/.config` en wil je dat in deze repo zetten:
 ./sync.sh -m "boodschap"   # idem, en maakt meteen een commit
 ```
 
-`install.sh` doet het omgekeerde: repo → live.
+`sync.sh` neemt ook `kitty/kitty.conf` en de pywal-configuratie mee en ververst
+`wal/colorschemes/dark/current.json` met het actieve palet. `install.sh` doet het
+omgekeerde: repo → live.
 
 ## Aandachtspunten
 
-- **Alacritty**: het importpad in `alacritty/alacritty.toml` is absoluut
+- **pywal-cache**: kitty importeert `~/.cache/wal/colors-kitty.conf` en rofi
+  `~/.cache/wal/colors-rofi-dark.rasi`. Die bestanden ontstaan pas na de eerste
+  `wal`-run; `install.sh` draait daarvoor `set-wallpaper.sh`. Ontbreken ze, draai
+  dan `~/.config/qtile/scripts/set-wallpaper.sh`.
+- **Alacritty** (optioneel): het importpad in `alacritty/alacritty.toml` is absoluut
   (`/home/<gebruiker>/.cache/wal/colors-alacritty.toml`). Pas dit aan als je een
   andere gebruikersnaam hebt.
 - **picom-backend**: `glx` staat aan voor de mooiste resultaten. Op een (virtuele)
