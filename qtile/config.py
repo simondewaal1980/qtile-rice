@@ -1,3 +1,4 @@
+import colorsys
 import json
 import os
 import shutil
@@ -364,6 +365,54 @@ alert = _palette.get("color1", "#cc241d")
 muted = _palette.get("color8", "#928374")
 surface = _palette.get("color0", "#282828")
 
+
+def _blend(color: str, base: str, amount: float) -> str:
+    """Meng 'color' met 'base' (0 = base, 1 = color) tot een dekkende kleur.
+
+    De balk gebruikt een window-opacity (picom); de vakken krijgen daarom
+    voorgemengde, dekkende kleuren in plaats van een eigen alpha-kanaal.
+    """
+
+    def channels(value: str) -> list[int]:
+        value = value.lstrip("#")
+        if len(value) == 3:
+            value = "".join(ch * 2 for ch in value)
+        return [int(value[i : i + 2], 16) for i in (0, 2, 4)]
+
+    fg, bg = channels(color), channels(base)
+    amount = max(0.0, min(amount, 1.0))
+    return "#" + "".join(
+        f"{round(f * amount + b * (1 - amount)):02x}" for f, b in zip(fg, bg)
+    )
+
+
+def _shift_hue(color: str, degrees: float) -> str:
+    """Verschuif de tint van een kleur, zodat vakken verschillend kleuren."""
+    value = color.lstrip("#")
+    if len(value) == 3:
+        value = "".join(ch * 2 for ch in value)
+    r, g, b = (int(value[i : i + 2], 16) / 255 for i in (0, 2, 4))
+    hue, lightness, saturation = colorsys.rgb_to_hls(r, g, b)
+    r, g, b = colorsys.hls_to_rgb(
+        (hue + degrees / 360) % 1.0, lightness, saturation
+    )
+    return f"#{round(r * 255):02x}{round(g * 255):02x}{round(b * 255):02x}"
+
+
+# De balk is halftransparant (zie opacity= hieronder); elk onderdeel krijgt
+# een eigen, zachte tint uit het pywal-palet. De kleuren worden vooraf met de
+# achtergrond gemengd, zodat ze ook zonder alpha-kanaal goed uitkomen. De
+# tinten zijn rond de accentkleur gedraaid, zodat de vakken ook bij een
+# eenkleurig pywal-palet van elkaar te onderscheiden blijven.
+bar_background = background
+box_workspaces = _blend(accent, background, 0.34)
+box_title = _blend(foreground, background, 0.06)
+box_weather = _blend(_shift_hue(accent, 45), background, 0.30)
+box_system = _blend(_shift_hue(accent, -35), background, 0.28)
+box_tray = _blend(foreground, background, 0.12)
+box_power = _blend(_shift_hue(accent, 160), background, 0.34)
+divider = _blend(foreground, box_system, 0.28)
+
 layouts = [
     # Bsp is Qtile's bspwm-achtige indeling: elk nieuw venster splitst de
     # beschikbare ruimte in tweeën (afwisselend horizontaal/verticaal).
@@ -414,7 +463,7 @@ layouts = [
 
 widget_defaults = dict(
     font="Noto Sans",
-    fontsize=18,
+    fontsize=16,
     padding=6,
     foreground=foreground,
 )
@@ -439,39 +488,67 @@ screens = [
     Screen(
         top=bar.Bar(
             [
-                widget.CurrentLayout(mode="icon", scale=0.7, padding=8),
+                # --- Werkplekken: layout-icoon + groepen in een eigen vak ---
+                widget.TextBox("", background=box_workspaces, padding=10),
+                widget.CurrentLayout(
+                    mode="icon",
+                    scale=0.7,
+                    padding=6,
+                    background=box_workspaces,
+                    foreground=accent2,
+                ),
                 widget.GroupBox(
                     font="FontAwesome",
-                    fontsize=20,
+                    fontsize=19,
                     active=foreground,
                     inactive=muted,
                     highlight_method="block",
                     block_highlight_text_color=background,
-                    this_current_screen_border=accent,
+                    this_current_screen_border=foreground,
                     other_current_screen_border=muted,
                     urgent_border=alert,
                     rounded=True,
                     borderwidth=0,
-                    padding_x=9,
-                    padding_y=3,
-                    margin_x=6,
-                    margin_y=5,
+                    padding_x=8,
+                    padding_y=4,
+                    margin_x=2,
+                    margin_y=0,
                     spacing=4,
                     disable_drag=True,
+                    background=box_workspaces,
                 ),
-                widget.Prompt(),
-                widget.Sep(linewidth=1, padding=8, foreground=muted),
-                widget.WindowName(),
+                widget.TextBox("", background=box_workspaces, padding=10),
+
+                widget.Spacer(length=8),
+
+                # --- Actief venster / commandoprompt -----------------------
+                widget.Prompt(background=box_title, padding=10),
+                widget.WindowName(
+                    background=box_title,
+                    foreground=foreground,
+                    fontsize=16,
+                    padding=12,
+                ),
+
+                widget.Spacer(length=8),
+
+                # --- Weer --------------------------------------------------
                 widget.GenPollCommand(
                     name="weather",
                     cmd=weather_command,
                     shell=True,
                     update_interval=900,
-                    foreground=accent2,
+                    foreground=foreground,
+                    background=box_weather,
+                    padding=12,
                     mouse_callbacks={
                         "Button3": lazy.spawn("xdg-open 'https://wttr.in/Eindhoven'")
                     },
                 ),
+
+                widget.Spacer(length=8),
+
+                # --- Accu + volume -----------------------------------------
                 # Accu: icoon + percentage. Ververs elke 30 seconden; onder de
                 # 15% kleurt het percentage rood (alert). Tijdens het laden
                 # staat er een bliksem, anders een accu-icoon.
@@ -488,8 +565,16 @@ screens = [
                     show_short_text=False,
                     low_percentage=0.15,
                     low_foreground=alert,
-                    foreground=accent2,
+                    foreground=foreground,
+                    background=box_system,
+                    padding=12,
                     update_interval=30,
+                ),
+                widget.Sep(
+                    linewidth=1,
+                    padding=6,
+                    foreground=divider,
+                    background=box_system,
                 ),
                 # Volume-regelaar: toont 🔊 (+ mute-icoon) van de standaardsink.
                 # Linksklik opent de geluidsinstellingen (pavucontrol),
@@ -497,33 +582,49 @@ screens = [
                 widget.PulseVolume(
                     name="volume",
                     emoji=True,
-                    foreground=accent2,
+                    foreground=foreground,
+                    background=box_system,
                     mute_foreground=alert,
+                    padding=12,
                     mouse_callbacks={
                         "Button1": lazy.spawn("pavucontrol"),
                         "Button3": lazy.widget["volume"].mute(),
                     },
                 ),
+
+                widget.Spacer(length=8),
+
+                # --- Systeemvak + klok -------------------------------------
                 # NB Systray is incompatible with Wayland, consider using StatusNotifier instead
                 # widget.StatusNotifier(),
-                widget.Systray(),
+                widget.Systray(background=box_tray, padding=8),
                 widget.TextBox(
                     "\uf017",
                     font="FontAwesome",
-                    fontsize=17,
+                    fontsize=16,
                     foreground=accent2,
-                    padding=4,
+                    background=box_tray,
+                    padding=6,
                 ),
-                widget.Clock(format="%a %d %b  %H:%M"),
-                # Power-knop: klik opent een dropdown (rofi) met uitzetten,
-                # opnieuw opstarten en uitloggen.
+                widget.Clock(
+                    format="%a %d %b  %H:%M",
+                    background=box_tray,
+                    padding=12,
+                ),
+
+                widget.Spacer(length=8),
+
+                # --- Power-knop --------------------------------------------
+                # Klik opent een dropdown (rofi) met uitzetten, opnieuw
+                # opstarten en uitloggen.
                 widget.TextBox(
                     "\uf011",
                     name="power",
                     font="FontAwesome",
-                    fontsize=17,
-                    foreground=alert,
-                    padding=6,
+                    fontsize=16,
+                    foreground=foreground,
+                    background=box_power,
+                    padding=14,
                     mouse_callbacks={
                         "Button1": lazy.spawn(
                             os.path.expanduser("~/.config/qtile/scripts/power-menu.sh")
@@ -531,9 +632,13 @@ screens = [
                     },
                 ),
             ],
-            44,
-            # border_width=[2, 0, 2, 0],  # Draw top and bottom borders
-            # border_color=["ff00ff", "000000", "ff00ff", "000000"]  # Borders are magenta
+            46,
+            background=bar_background,
+            # Halftransparant via de compositor (picom); de wallpaper blijft
+            # zichtbaar achter de balk.
+            opacity=0.85,
+            # Zwevende balk: ruimte rondom, zodat picom de hoeken kan afronden.
+            margin=[8, 10, 4, 10],
         ),
         background=background,
         wallpaper=wallpaper,
